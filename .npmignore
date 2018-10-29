@@ -1,0 +1,12 @@
+node_modules/
+src/
+coverage/
+public/
+bin/
+tests/
+
+*.sublime-project
+*.sublime-workspace
+
+/*.{ts,js,json}
+/.babelrc

@@ -1,0 +1,57 @@
+<html>
+	<head>
+		<style>
+			html {
+				background-color: black;
+			}
+			body {
+				padding: 0;
+				margin: 0;
+			}
+			#prog-bar {
+				position: absolute;
+				bottom: 32px;
+				left: 50%;
+				transform: translateX(-50%);
+				color: white;
+				width: 256px;
+				height: 16px;
+				border-radius: 16px;
+				margin: 4px;
+				border: 2px solid white;
+				overflow: hidden;
+				padding: 4px;
+			}
+			#prog-inter {
+				background-color: white;
+				width: 50%;
+				height: 100%;
+				border-radius: 16px;
+			}
+			#prog-text {
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				color: white;
+				transform: translateX(-50%) translateY(-50%);
+    		mix-blend-mode: difference;
+    		font-family: monospace;
+			}
+			#three-container {
+				width: 100%;
+				height: 100%;
+				position: absolute;
+				top: 0;
+				left: 0;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="three-container"></div>
+		<div id="prog-bar">
+			<div id="prog-text">0%</div>
+			<div id="prog-inter"></div>
+		</div>
+		<script src="./main.js"></script>
+	</body>
+</html>

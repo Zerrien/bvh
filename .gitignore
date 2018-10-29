@@ -1,1 +1,16 @@
-.idea/
+# IDE files
+*.sublime-project
+*.sublime-workspace
+
+# Development files
+coverage/
+node_modules/
+
+# Built artifacts
+dist/
+
+# Binaries
+*.ply
+
+# Shoo
+package-lock.json
