@@ -6,7 +6,6 @@
     "sourceMap": true,
     "strict": true,
     "allowJs": true,
-    "declaration": true,
     "paths": {
       "@src/*": ["./src/*"],
       "@resources/*": ["./public/resources/*"]

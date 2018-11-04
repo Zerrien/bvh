@@ -18,6 +18,17 @@ export class BVHVector3  {
 		this.y = array[firstElementPos+1];
 		this.z = array[firstElementPos+2];
 	}
+	setFromArrayNoOffset(array:number[]) {
+		this.x = array[0];
+		this.y = array[1];
+		this.z = array[2];
+	}
+
+	setFromArgs(a:number, b:number, c:number) {
+		this.x = a;
+		this.y = b;
+		this.z = c;
+	}
 	add(v:BVHVector3) {
 		this.x += v.x;
 		this.y += v.y;
@@ -56,5 +67,14 @@ export class BVHVector3  {
 	}
 	clone() {
 		return new BVHVector3(this.x, this.y, this.z);
+	}
+	static fromAny(potentialVector:any):BVHVector3 {
+		if(potentialVector instanceof BVHVector3) {
+			return potentialVector;
+		} else if (potentialVector.x !== undefined && potentialVector.x !== null) {
+			return new BVHVector3(potentialVector.x, potentialVector.y, potentialVector.z);
+		} else {
+			throw new TypeError("Couldn't convert to BVHVector3.");
+		}
 	}
 }

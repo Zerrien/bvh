@@ -1,6 +1,7 @@
+#! /usr/bin/env node
+
 // Note: This isn't perfectly usable, gotta tweak values until it works with your specific model...
 
-#! /usr/bin/env node
 const fs = require('fs');
 const path = require('path');
 
@@ -38,7 +39,6 @@ const file = fs.readFileSync(path.join(process.cwd(), modelPath), 'utf8');
 	}
 	writeStream.write(Buffer.from(new Uint8Array(n.buffer)));
 })();
-
 
 async function readStreamOnce(readStream) {
 	return new Promise(res => {

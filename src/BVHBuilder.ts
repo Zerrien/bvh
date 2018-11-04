@@ -18,8 +18,6 @@ declare global {
 	}
 }
 
-
-
 export function BVHBuilder(triangles:any, maxTrianglesPerNode:number = 10):BVH {
 	//Vector[][] | number[] | Float32Array
 	let trianglesArray:Float32Array = triangles instanceof Float32Array ? triangles : buildTriangleArray(triangles);
@@ -34,13 +32,11 @@ export function BVHBuilder(triangles:any, maxTrianglesPerNode:number = 10):BVH {
 	let rootNode:BVHNode = new BVHNode(extents[0], extents[1], 0, triangleCount, 0);
 	let nodesToSplit:BVHNode[] = [rootNode];
 	let node:BVHNode | undefined;
-	let a = 1;
 	while (node = nodesToSplit.pop()) {
 		let nodes = splitNode(node, maxTrianglesPerNode, bboxArray, bboxHelper);
 		nodesToSplit.push(...nodes);
-		a += nodes.length;
 	}
-	console.log("nodes", a)
+	
 	return new BVH(rootNode, bboxArray, trianglesArray);
 }
 
@@ -59,7 +55,6 @@ export async function BVHBuilderAsync(triangles:any, maxTrianglesPerNode:number 
 	let nodesToSplit:BVHNode[] = [rootNode];
 	let node:BVHNode | undefined;
 
-	let a = 1;
 	await asyncWork(() => {
 		node = nodesToSplit.pop();
 		return node !== undefined;
@@ -67,11 +62,9 @@ export async function BVHBuilderAsync(triangles:any, maxTrianglesPerNode:number 
 		if(node !== undefined) {
 			let nodes = splitNode(node, maxTrianglesPerNode, bboxArray, bboxHelper);
 			nodesToSplit.push(...nodes);
-			a += nodes.length;
 		}
 	}, progressCallback);
 
-	console.log("nodes", a)
 	return new BVH(rootNode, bboxArray, trianglesArray);
 }
 

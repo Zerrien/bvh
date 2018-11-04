@@ -5,8 +5,6 @@ module.exports = {
   devtool: "inline-source-map",
   entry: {
   	main: "./main.ts",
-  	worker: "./worker.ts",
-  	main_tester: "./main_tester.ts"
   },
   output: {
     path: path.resolve(__dirname, "public"),

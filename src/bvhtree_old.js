@@ -161,14 +161,11 @@ bvhtree.BVH = function(triangles, maxTrianglesPerNode) {
     this._rootNode = new bvhtree.BVHNode(extents[0], extents[1], 0, triangleCount, 0);
 
     this._nodesToSplit = [this._rootNode];
-    var a = 1;
+
     while (this._nodesToSplit.length > 0) {
         var node = this._nodesToSplit.pop();
-        let n = this._nodesToSplit.length;
         this.splitNode(node);
-        a += (this._nodesToSplit.length - n);
     }
-    console.log("nodes", a);
 };
 
 /**
