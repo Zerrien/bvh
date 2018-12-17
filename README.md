@@ -3,12 +3,12 @@
 
 ## Demo
 
-TODO: Hook up GitHub pages to a docs folder
+[GitHub Pages Demo Site](https://zerrien.github.io/bvh/public/)
 
 ## Use
 
 ```javascript
-const { BVHBuilder, BVHVector3 } = require("BVH");
+const { BVHBuilderAsync, BVHVector3 } = require("BVH");
 
 // Have an array of faces (array of stride 9)
 const faceArray = [
@@ -16,18 +16,23 @@ const faceArray = [
   0.0, 0.0, 1.0,
   1.0, 0.0, 0.0,
 ];
+
 // Generate  the Bounding Volume Hierachy from an array of faces
-const maxTrianglesPerNode = 1;
-const BVH = BVHBuilder(faceArray, maxTrianglesPerNode); // Warning: Computational expensive, may take a bit.
+const maxTrianglesPerNode = 5;
+const BVH = BVHBuilderAsync(faceArray, maxTrianglesPerNode, function({trianglesLeafed}) { // Warning: Computationally expensive, may take a bit.
+	console.log("Progress", trianglesLeafed / (faceArray.length / 9)); // Progress callback for user feedback.
+}); 
+
 // Find ray intersections
 const intersections = BVH.intersectRay(new BVHVector3(0.25, 1, 0.25), new BVHVector3(0, -1, 0));
 ```
 
 ### Considerations
 
-Bounding Volume Hierarchies trade memory for intersection computation speed.
-- If you are not memory bound, you will want a low maxTrianglesPerNode, (1 is best for speed.)
-- As you increase maxTrianglesPerNode, a log/log relationship vs the number of nodes created is observed.
+Bounding Volume Hierarchies trade memory for ray intersection computation speed.
+- If you are not memory bound, you will want a low maxTrianglesPerNode to minimize intersection speed.
+- As you decrease maxTrianglesPerNode, a log/log relationship vs the number of nodes created is observed.
+- At 1 maxTrianglesPerNode you get the fastest ray intersection speed, but have the highest memory overhead.
 
 ## Development
 
