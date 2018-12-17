@@ -12,6 +12,9 @@
     },
     "baseUrl": "./",
   },
+  "lib": [
+    "webworker"
+  ],
   "include": [
     "./src/**/*",
     "./public/**/*"

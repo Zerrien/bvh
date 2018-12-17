@@ -1,3 +1,23 @@
+declare global {
+	interface XYZ {
+		0: number,
+		1: number,
+		2: number
+	}
+	
+	interface Vector {
+		x: number;
+		y: number;
+		z: number;
+	}
+
+	type Evaluator = () => boolean;
+	type Effort = () => void;
+	type WorkProgress = {nodesSplit: number};
+	type WorkProgressCallback = (progressObj:WorkProgress) => void;
+	type BVHProgress = {nodesSplit: number, trianglesLeafed: number};
+}
+
 const EPSILON = 1e-6;
 
 import { BVHVector3 } from "./BVHVector3";
@@ -5,20 +25,11 @@ import { BVHNode } from "./BVHNode";
 import { BVH } from "./BVH";
 import { asyncWork } from './utils'
 
-declare global {
-	interface XYZ {
-		0: number,
-		1: number,
-		2: number
-	}
-	interface Vector {
-		x: number;
-		y: number;
-		z: number;
-	}
-}
-
 export function BVHBuilder(triangles:any, maxTrianglesPerNode:number = 10):BVH {
+	if(typeof maxTrianglesPerNode !== 'number') throw new Error(`maxTrianglesPerNode must be of type number, got: ${typeof maxTrianglesPerNode}`);
+	if(maxTrianglesPerNode < 1) throw new Error(`maxTrianglesPerNode must be greater than or equal to 1, got: ${maxTrianglesPerNode}`);
+	if(Number.isNaN(maxTrianglesPerNode)) throw new Error(`maxTrianglesPerNode is NaN`);
+	if(!Number.isInteger(maxTrianglesPerNode)) console.warn(`maxTrianglesPerNode is expected to be an integer, got: ${maxTrianglesPerNode}`);
 	//Vector[][] | number[] | Float32Array
 	let trianglesArray:Float32Array = triangles instanceof Float32Array ? triangles : buildTriangleArray(triangles);
 	let bboxArray:Float32Array = calcBoundingBoxes(trianglesArray);
@@ -32,7 +43,8 @@ export function BVHBuilder(triangles:any, maxTrianglesPerNode:number = 10):BVH {
 	let rootNode:BVHNode = new BVHNode(extents[0], extents[1], 0, triangleCount, 0);
 	let nodesToSplit:BVHNode[] = [rootNode];
 	let node:BVHNode | undefined;
-	while (node = nodesToSplit.pop()) {
+
+	while(node = nodesToSplit.pop()) {
 		let nodes = splitNode(node, maxTrianglesPerNode, bboxArray, bboxHelper);
 		nodesToSplit.push(...nodes);
 	}
@@ -40,7 +52,7 @@ export function BVHBuilder(triangles:any, maxTrianglesPerNode:number = 10):BVH {
 	return new BVH(rootNode, bboxArray, trianglesArray);
 }
 
-export async function BVHBuilderAsync(triangles:any, maxTrianglesPerNode:number = 10, progressCallback?:(obj:{nodesSplit: number}) => void):Promise<BVH> {
+export async function BVHBuilderAsync(triangles:any, maxTrianglesPerNode:number = 10, progressCallback?:(obj:BVHProgress) => void):Promise<BVH> {
 	//Vector[][] | number[] | Float32Array
 	let trianglesArray:Float32Array = triangles instanceof Float32Array ? triangles : buildTriangleArray(triangles);
 	let bboxArray:Float32Array = calcBoundingBoxes(trianglesArray);
@@ -55,16 +67,19 @@ export async function BVHBuilderAsync(triangles:any, maxTrianglesPerNode:number 
 	let nodesToSplit:BVHNode[] = [rootNode];
 	let node:BVHNode | undefined;
 
+	let tally = 0;
 	await asyncWork(() => {
 		node = nodesToSplit.pop();
 		return node !== undefined;
 	}, () => {
-		if(node !== undefined) {
-			let nodes = splitNode(node, maxTrianglesPerNode, bboxArray, bboxHelper);
-			nodesToSplit.push(...nodes);
-		}
-	}, progressCallback);
-
+		if(!node) return;
+		let nodes = splitNode(node, maxTrianglesPerNode, bboxArray, bboxHelper);
+		if(!nodes.length) tally += node.elementCount();
+		nodesToSplit.push(...nodes);
+	}, progressCallback ?
+		(nodesSplit:WorkProgress) => progressCallback(Object.assign({trianglesLeafed: tally}, nodesSplit))
+		: undefined
+	);
 	return new BVH(rootNode, bboxArray, trianglesArray);
 }
 

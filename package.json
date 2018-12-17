@@ -1,6 +1,6 @@
 {
   "name": "bvh",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "BVH",
   "main": "./dist/index.js",
   "repository": {
@@ -9,8 +9,9 @@
   },
   "scripts": {
     "build": "tsc",
+    "build:docs": "webpack",
     "start": "webpack-dev-server",
-    "test": "jest"
+    "test": "jest --watch"
   },
   "keywords": [
     "BVH",
@@ -29,12 +30,14 @@
   "homepage": "",
   "dependencies": {},
   "devDependencies": {
+    "@babel/core": "^7.1.6",
+    "@babel/preset-env": "^7.1.6",
     "@types/jest": "^23.3.5",
     "@types/node": "^10.12.0",
     "@types/three": "^0.93.4",
     "@types/webassembly-js-api": "0.0.1",
     "assemblyscript": "github:AssemblyScript/assemblyscript",
-    "babel-core": "^6.26.3",
+    "babel-core": "^7.0.0-bridge.0",
     "babel-jest": "^23.6.0",
     "jest": "^23.6.0",
     "puppeteer": "^1.9.0",

@@ -4,14 +4,19 @@ module.exports = {
   mode: "development",
   devtool: "inline-source-map",
   entry: {
-  	main: "./main.ts",
+  	main: "./docs/main.ts",
+  	worker: "./docs/worker.ts",
   },
   output: {
-    path: path.resolve(__dirname, "public"),
+    path: path.resolve(__dirname, "./docs/public"),
     filename: "./[name].js"
   },
 	resolve: {
-		extensions: [".ts", ".js"]
+		extensions: [".ts", ".js"],
+		alias: {
+			"@src": path.resolve(__dirname, "./src"),
+			"BVH": path.resolve(__dirname, "./src")
+		}
 	},
 	module: {
 		rules: [
@@ -22,6 +27,6 @@ module.exports = {
 		]
 	},
 	devServer: {
-		contentBase: "./public/"
+		contentBase: "./docs/public"
 	}
 }

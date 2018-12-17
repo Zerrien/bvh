@@ -17,7 +17,7 @@ export function countNodes(node:BVHNode, count:number = 0):number {
 	return count;
 }
 
-export async function asyncWork(workCheck:() => boolean, work:() => void, progressCallback?:(obj:{nodesSplit: number}) => void):Promise<void> {
+export async function asyncWork(workCheck:Evaluator, work:Effort, progressCallback?:WorkProgressCallback):Promise<void> {
 	const a:Generator = asyncify(workCheck, work);
 	let done: boolean;
 	let nodesSplit: number;
@@ -29,7 +29,7 @@ export async function asyncWork(workCheck:() => boolean, work:() => void, progre
 	}
 }
 
-function* asyncify(workCheck:() => boolean, work:() => void) {
+function* asyncify(workCheck:Evaluator, work:Effort) {
 	let sTime:number = Date.now();
 	let n:number = 0;
 	let thres:number = 0;
@@ -48,4 +48,4 @@ function* asyncify(workCheck:() => boolean, work:() => void) {
 	}
 }
 
-const tickify = ():Promise<void> => new Promise((res:() => void) => setTimeout(res));
+const tickify = ():Promise<void> => new Promise((res:Effort) => setTimeout(res));

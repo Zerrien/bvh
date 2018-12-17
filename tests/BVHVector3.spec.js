@@ -11,8 +11,8 @@ describe("Constructing BVHVector3s", () => {
 });
 
 describe("Interacting with BVHVector3s", () => {
-	let vectorA: BVHVector3;
-	let vectorB: BVHVector3;
+	let vectorA;
+	let vectorB;
 	beforeEach(() => {
 		vectorA = new BVHVector3(10, 10, 10);
 		vectorB = new BVHVector3(20, 20, 20);

@@ -15,6 +15,12 @@ export class BVHNode {
 		this.node0 = null;
 		this.node1 = null;
 	}
+	static fromObj({extentsMin, extentsMax, startIndex, endIndex, level, node0, node1}:any) {
+		const tempNode = new BVHNode(extentsMin, extentsMax, startIndex, endIndex, level);
+		if(node0) tempNode.node0 = BVHNode.fromObj(node0);
+		if(node1) tempNode.node1 = BVHNode.fromObj(node1);
+		return tempNode;
+	}
 	elementCount() {
 		return this.endIndex - this.startIndex;
 	}
@@ -34,14 +40,5 @@ export class BVHNode {
 	clearShapes() {
 		this.startIndex = -1;
 		this.endIndex = -1;
-	}
-	static fromSerialized(obj:any) {
-		return new BVHNode(
-			obj.extentsMin,
-			obj.extentsMax,
-			obj.startIndex,
-			obj.endIndex,
-			obj.level
-		);
 	}
 }
