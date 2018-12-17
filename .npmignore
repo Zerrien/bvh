@@ -1,6 +1,10 @@
 node_modules/
+
 src/
+
 coverage/
+
+docs/
 public/
 bin/
 tests/
