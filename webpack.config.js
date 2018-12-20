@@ -27,6 +27,7 @@ module.exports = {
 		]
 	},
 	devServer: {
-		contentBase: "./docs/public"
+		contentBase: "./docs/public",
+		stats: 'errors-only',
 	}
 }

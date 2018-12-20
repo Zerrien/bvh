@@ -1,3 +1,6 @@
+import "@babel/polyfill"; // IE11
+import 'whatwg-fetch'; // IE11
+
 const progressElement = <HTMLElement>document.querySelector("#prog-inter");
 const progressText = <HTMLElement>document.querySelector("#prog-text");
 const progressDesc = <HTMLElement>document.querySelector("#prog-status");
@@ -30,6 +33,7 @@ function concatTypedArray(resultConstructor:any, ...arrays:any[]) {
 ;(async function() {
 	setProgress("Downloading model...", 0, 1, 0, 1);
 	x = new Float32Array(await (await fetch('./resources/models/dragon_vrip.f32verts').then((response):Promise<ArrayBuffer> => {
+		if(!response.body) return response.arrayBuffer(); // IE11
 		const bodyReader = (response as any).body.getReader();
 		const fileSize = (response as any).headers.get('content-length');
 		return new Promise((res, rej) => {
