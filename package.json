@@ -1,11 +1,11 @@
 {
   "name": "bvh",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "BVH",
   "main": "./dist/index.js",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/Zerrien/bvh"
   },
   "scripts": {
     "pre-publish": "npm publish --dry-run",
@@ -30,9 +30,9 @@
   "author": "Ben Raziel & Josh Callebaut",
   "license": "MIT",
   "bugs": {
-    "url": ""
+    "url": "https://github.com/Zerrien/bvh/issues"
   },
-  "homepage": "",
+  "homepage": "https://zerrien.github.io/bvh/public/",
   "dependencies": {},
   "devDependencies": {
     "@babel/core": "^7.1.6",

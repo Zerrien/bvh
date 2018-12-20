@@ -51,7 +51,7 @@ function concatTypedArray(resultConstructor:any, ...arrays:any[]) {
 			})
 		});
 	})));
-	bvh = await BVHBuilderAsync(x, undefined, ({trianglesLeafed}) => {
+	bvh = await BVHBuilderAsync(x, undefined, {steps: 10}, ({trianglesLeafed}) => {
 		setProgress("Generating BVH...", 0.5, 1, trianglesLeafed, x.length / 9);
 	});
 	setProgress("Done!", 0.5, 1, 1, 1);

@@ -11,11 +11,12 @@ declare global {
 		z: number;
 	}
 
-	type Evaluator = () => boolean;
-	type Effort = () => void;
+	type Evaluator = () => number;
+	type Work = () => void;
 	type WorkProgress = {nodesSplit: number};
 	type WorkProgressCallback = (progressObj:WorkProgress) => void;
 	type BVHProgress = {nodesSplit: number, trianglesLeafed: number};
+	type AsyncifyParams = {ms?: number, steps?: number};
 }
 
 const EPSILON = 1e-6;
@@ -52,7 +53,7 @@ export function BVHBuilder(triangles:any, maxTrianglesPerNode:number = 10):BVH {
 	return new BVH(rootNode, bboxArray, trianglesArray);
 }
 
-export async function BVHBuilderAsync(triangles:any, maxTrianglesPerNode:number = 10, progressCallback?:(obj:BVHProgress) => void):Promise<BVH> {
+export async function BVHBuilderAsync(triangles:any, maxTrianglesPerNode:number = 10, asyncParams:AsyncifyParams = {}, progressCallback?:(obj:BVHProgress) => void):Promise<BVH> {
 	//Vector[][] | number[] | Float32Array
 	let trianglesArray:Float32Array = triangles instanceof Float32Array ? triangles : buildTriangleArray(triangles);
 	let bboxArray:Float32Array = calcBoundingBoxes(trianglesArray);
@@ -70,13 +71,13 @@ export async function BVHBuilderAsync(triangles:any, maxTrianglesPerNode:number 
 	let tally = 0;
 	await asyncWork(() => {
 		node = nodesToSplit.pop();
-		return node !== undefined;
+		return tally * 9 / trianglesArray.length;
 	}, () => {
 		if(!node) return;
 		let nodes = splitNode(node, maxTrianglesPerNode, bboxArray, bboxHelper);
 		if(!nodes.length) tally += node.elementCount();
 		nodesToSplit.push(...nodes);
-	}, progressCallback ?
+	}, asyncParams, progressCallback ?
 		(nodesSplit:WorkProgress) => progressCallback(Object.assign({trianglesLeafed: tally}, nodesSplit))
 		: undefined
 	);
@@ -98,9 +99,10 @@ function splitNode(node: BVHNode, maxTriangles:number, bboxArray:Float32Array, b
 	objectCenter.length = 3;
 
 	for (let i = startIndex; i < endIndex; i++) {
-		objectCenter[0] = (bboxArray[i * 7 + 1] + bboxArray[i * 7 + 4]) * 0.5; // center = (min + max) / 2
-		objectCenter[1] = (bboxArray[i * 7 + 2] + bboxArray[i * 7 + 5]) * 0.5; // center = (min + max) / 2
-		objectCenter[2] = (bboxArray[i * 7 + 3] + bboxArray[i * 7 + 6]) * 0.5; // center = (min + max) / 2
+		let idx = i * 7 + 1;
+		objectCenter[0] = (bboxArray[idx] + bboxArray[idx++ + 3]) * 0.5; // center = (min + max) / 2
+		objectCenter[1] = (bboxArray[idx] + bboxArray[idx++ + 3]) * 0.5; // center = (min + max) / 2
+		objectCenter[2] = (bboxArray[idx] + bboxArray[idx + 3]) * 0.5; // center = (min + max) / 2
 		for (let j = 0; j < 3; j++) {
 			if (objectCenter[j] < extentCenters[j]) {
 				leftNode[j].push(i);
@@ -190,12 +192,13 @@ function calcExtents(bboxArray:Float32Array, startIndex:number, endIndex:number,
 	let maxY = -Infinity;
 	let maxZ = -Infinity;
 	for (let i = startIndex; i < endIndex; i++) {
-		minX = Math.min(bboxArray[i*7+1], minX);
-		minY = Math.min(bboxArray[i*7+2], minY);
-		minZ = Math.min(bboxArray[i*7+3], minZ);
-		maxX = Math.max(bboxArray[i*7+4], maxX);
-		maxY = Math.max(bboxArray[i*7+5], maxY);
-		maxZ = Math.max(bboxArray[i*7+6], maxZ);
+		let idx = i * 7 + 1;
+		minX = Math.min(bboxArray[idx++], minX);
+		minY = Math.min(bboxArray[idx++], minY);
+		minZ = Math.min(bboxArray[idx++], minZ);
+		maxX = Math.max(bboxArray[idx++], maxX);
+		maxY = Math.max(bboxArray[idx++], maxY);
+		maxZ = Math.max(bboxArray[idx], maxZ);
 	}
 	return [
 		[minX - expandBy, minY - expandBy, minZ - expandBy],
@@ -208,15 +211,16 @@ function calcBoundingBoxes(trianglesArray: Float32Array):Float32Array {
 	const bboxArray:Float32Array = new Float32Array(triangleCount * 7);
 
 	for (let i = 0; i < triangleCount; i++) {
-		const p0x = trianglesArray[i*9];
-		const p0y = trianglesArray[i*9+1];
-		const p0z = trianglesArray[i*9+2];
-		const p1x = trianglesArray[i*9+3];
-		const p1y = trianglesArray[i*9+4];
-		const p1z = trianglesArray[i*9+5];
-		const p2x = trianglesArray[i*9+6];
-		const p2y = trianglesArray[i*9+7];
-		const p2z = trianglesArray[i*9+8];
+		let idx = i * 9;
+		const p0x = trianglesArray[idx++];
+		const p0y = trianglesArray[idx++];
+		const p0z = trianglesArray[idx++];
+		const p1x = trianglesArray[idx++];
+		const p1y = trianglesArray[idx++];
+		const p1z = trianglesArray[idx++];
+		const p2x = trianglesArray[idx++];
+		const p2y = trianglesArray[idx++];
+		const p2z = trianglesArray[idx];
 
 		const minX = Math.min(p0x, p1x, p2x);
 		const minY = Math.min(p0y, p1y, p2y);
@@ -237,39 +241,42 @@ function buildTriangleArray(triangles:Vector[][]):Float32Array {
 		const p0 = triangles[i][0];
 		const p1 = triangles[i][1];
 		const p2 = triangles[i][2];
+		let idx = i * 9;
+		trianglesArray[idx++] = p0.x;
+		trianglesArray[idx++] = p0.y;
+		trianglesArray[idx++] = p0.z;
 
-		trianglesArray[i*9] = p0.x;
-		trianglesArray[i*9+1] = p0.y;
-		trianglesArray[i*9+2] = p0.z;
+		trianglesArray[idx++] = p1.x;
+		trianglesArray[idx++] = p1.y;
+		trianglesArray[idx++] = p1.z;
 
-		trianglesArray[i*9+3] = p1.x;
-		trianglesArray[i*9+4] = p1.y;
-		trianglesArray[i*9+5] = p1.z;
-
-		trianglesArray[i*9+6] = p2.x;
-		trianglesArray[i*9+7] = p2.y;
-		trianglesArray[i*9+8] = p2.z;
+		trianglesArray[idx++] = p2.x;
+		trianglesArray[idx++] = p2.y;
+		trianglesArray[idx] = p2.z;
 	}
 
 	return trianglesArray;
 }
 
 function setBox(bboxArray:Float32Array, pos:number, triangleId:number, minX:number, minY:number, minZ:number, maxX:number, maxY:number, maxZ:number):void {
-	bboxArray[pos*7] = triangleId;
-	bboxArray[pos*7+1] = minX;
-	bboxArray[pos*7+2] = minY;
-	bboxArray[pos*7+3] = minZ;
-	bboxArray[pos*7+4] = maxX;
-	bboxArray[pos*7+5] = maxY;
-	bboxArray[pos*7+6] = maxZ;
+	let idx = pos * 7;
+	bboxArray[idx++] = triangleId;
+	bboxArray[idx++] = minX;
+	bboxArray[idx++] = minY;
+	bboxArray[idx++] = minZ;
+	bboxArray[idx++] = maxX;
+	bboxArray[idx++] = maxY;
+	bboxArray[idx] = maxZ;
 }
 
 function copyBox(sourceArray:Float32Array, sourcePos:number, destArray:Float32Array, destPos:number):void {
-	destArray[destPos*7] = sourceArray[sourcePos*7];
-	destArray[destPos*7+1] = sourceArray[sourcePos*7+1];
-	destArray[destPos*7+2] = sourceArray[sourcePos*7+2];
-	destArray[destPos*7+3] = sourceArray[sourcePos*7+3];
-	destArray[destPos*7+4] = sourceArray[sourcePos*7+4];
-	destArray[destPos*7+5] = sourceArray[sourcePos*7+5];
-	destArray[destPos*7+6] = sourceArray[sourcePos*7+6];
+	let idx = destPos * 7;
+	let jdx = sourcePos * 7;
+	destArray[idx++] = sourceArray[jdx++];
+	destArray[idx++] = sourceArray[jdx++];
+	destArray[idx++] = sourceArray[jdx++];
+	destArray[idx++] = sourceArray[jdx++];
+	destArray[idx++] = sourceArray[jdx++];
+	destArray[idx++] = sourceArray[jdx++];
+	destArray[idx] = sourceArray[jdx];
 }

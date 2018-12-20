@@ -17,11 +17,14 @@ export function countNodes(node:BVHNode, count:number = 0):number {
 	return count;
 }
 
-export async function asyncWork(workCheck:Evaluator, work:Effort, progressCallback?:WorkProgressCallback):Promise<void> {
-	const a:Generator = asyncify(workCheck, work);
+export async function asyncWork(workCheck:Evaluator, work:Work, options:AsyncifyParams, progressCallback?:WorkProgressCallback):Promise<void> {
+	if(options.ms !== undefined && options.steps !== undefined) {
+		console.warn("Asyncify got both steps and ms, defaulting to steps.");
+	}
+	const worker:Generator = (options.steps !== undefined ? percentageAsyncify : timeAsyncify)(workCheck, work, options);
 	let done: boolean;
 	let nodesSplit: number;
-	while(!({value: nodesSplit, done} = a.next(), done)) {
+	while(!({value: nodesSplit, done} = worker.next(), done)) {
 		if(typeof progressCallback !== 'undefined') {
 			progressCallback({nodesSplit});
 		}
@@ -29,23 +32,48 @@ export async function asyncWork(workCheck:Evaluator, work:Effort, progressCallba
 	}
 }
 
-function* asyncify(workCheck:Evaluator, work:Effort) {
+function* timeAsyncify(workCheck:Evaluator, work:Work, {ms=1000 / 30}:AsyncifyParams) {
 	let sTime:number = Date.now();
 	let n:number = 0;
 	let thres:number = 0;
 	let count:number = 0;
-	while(workCheck()) {
+	while(workCheck() < 1) {
 		work();
 		count++;
 		if(++n >= thres) {
-			if(Date.now() - sTime > 10) {
+			const cTime = Date.now();
+			const tDiff = cTime - sTime;
+			if(tDiff > ms) {
 				yield count;
-				sTime = Date.now();
-				thres = n;
+				thres = n * (ms / tDiff);
+				sTime = cTime;
 				n = 0;
 			}
 		}
 	}
 }
 
-const tickify = ():Promise<void> => new Promise((res:Effort) => setTimeout(res));
+function* percentageAsyncify(workCheck:Evaluator, work:Work, {steps=10}:AsyncifyParams) {
+	if(steps <= 0) {
+		throw new Error("Asyncify steps was less than or equal to zero");
+	}
+	let count:number = 0;
+	let totalNumber: number = 0;
+	let lastInc:number = 0;
+	let workPercentage:number;
+	let percentage:number = 1 / steps;
+	while((workPercentage = workCheck(), workPercentage < 1)) {
+		work();
+		count++;
+		if(workPercentage > lastInc) {
+			totalNumber += 1;
+			yield count;
+			lastInc = workPercentage + percentage;
+		}
+	}
+	console.log("Total", totalNumber);
+}
+
+
+
+const tickify = ():Promise<void> => new Promise((res:Work) => setTimeout(res));

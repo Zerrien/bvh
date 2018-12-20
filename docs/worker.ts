@@ -11,7 +11,7 @@ onmessage = async function({data:{message, data}}) {
 }
 
 async function buildBVH(array:any ) {
-	bvh = await BVHBuilderAsync(array, undefined, function(value) {
+	bvh = await BVHBuilderAsync(array, undefined, undefined, function(value) {
 		(self as any).postMessage({
 			message: "progress",
 			data: {
