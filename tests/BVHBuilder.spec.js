@@ -28,22 +28,97 @@ const stackedTriangles = new Float32Array([
 beforeEach(() => {
 	console.warn = jest.fn(() => false);
 });
+describe('BVHBuilderAsync', () => {
+	describe('Accepted parameters', () => {
+		describe('triangles', () => {
+			test('number', async () => {
+				await expect(BVHBuilderAsync(0)).rejects.toThrow(new Error('triangles must be of type Vector[][] | number[] | Float32Array, got: number'));
+			});
+			test('string', async () => {
+				await expect(BVHBuilderAsync("")).rejects.toThrow(new Error('triangles must be of type Vector[][] | number[] | Float32Array, got: string'));
+			});
+			test('object', async () => {
+				await expect(BVHBuilderAsync({})).rejects.toThrow(new Error('triangles must be of type Vector[][] | number[] | Float32Array, got: object'));
+			});
+			test('Empty array', async () => {
+				await BVHBuilderAsync([]);
+				expect(console.warn).toBeCalled();
+				expect(console.warn.mock.calls[0][0]).toBe(`triangles appears to be an array with 0 elements.`);
+			});
+			test('Array of face objects', async () => {
+				await expect(BVHBuilderAsync([[{x:0, y:0, z:0}, {x:0, y:0, z:1}, {x:1, y:0, z:0}]])).resolves.toBeTruthy();
+			});
+		});
+		describe('maxTrianglesPerNode', () => {
+			test('0', async () => {
+				await expect(BVHBuilderAsync(oneTriangle, 0)).rejects.toThrow(new Error('maxTrianglesPerNode must be greater than or equal to 1, got: 0'));
+			});
+			test('-1', async () => {
+				await expect(BVHBuilderAsync(oneTriangle, -1)).rejects.toThrow(new Error('maxTrianglesPerNode must be greater than or equal to 1, got: -1'));
+			});
+			test('0.5', async () => {
+				await expect(BVHBuilderAsync(oneTriangle, 0.5)).rejects.toThrow(new Error('maxTrianglesPerNode must be greater than or equal to 1, got: 0.5'));
+			});
+			test('1.5', async () => {
+				await BVHBuilderAsync(oneTriangle, 1.5);
+				expect(console.warn).toBeCalled();
+				expect(console.warn.mock.calls[0][0]).toBe('maxTrianglesPerNode is expected to be an integer, got: 1.5');
+			});
+			test('String', async () => {
+				await expect(BVHBuilderAsync(oneTriangle, "")).rejects.toThrow(new Error('maxTrianglesPerNode must be of type number, got: string'));
+			});
+			test('Object', async () => {
+				await expect(BVHBuilderAsync(oneTriangle, {})).rejects.toThrow(new Error('maxTrianglesPerNode must be of type number, got: object'));
+			});
+			test('Array', async () => {
+				await expect(BVHBuilderAsync(oneTriangle, [])).rejects.toThrow(new Error('maxTrianglesPerNode must be of type number, got: object'));
+			});
+			test('Boolean', async () => {
+				await expect(BVHBuilderAsync(oneTriangle, true)).rejects.toThrow(new Error('maxTrianglesPerNode must be of type number, got: boolean'));
+			});
+			test('null', async () => {
+				await expect(BVHBuilderAsync(oneTriangle, null)).rejects.toThrow(new Error('maxTrianglesPerNode must be of type number, got: object'));
+			});
+			test('Function', async () => {
+				await expect(BVHBuilderAsync(oneTriangle, () => false)).rejects.toThrow(new Error('maxTrianglesPerNode must be of type number, got: function'));
+			});
+			test('Symbol', async () => {
+				await expect(BVHBuilderAsync(oneTriangle, Symbol())).rejects.toThrow(new Error('maxTrianglesPerNode must be of type number, got: symbol'));
+			});
+			test('NaN', async () => {
+				await expect(BVHBuilderAsync(oneTriangle, NaN)).rejects.toThrow(new Error('maxTrianglesPerNode is NaN'));
+			});
+			test('undefined', async () => {
+				await expect(BVHBuilderAsync(oneTriangle, undefined)).resolves.toBeTruthy();
+			});
+			test('Infinity', async () => {
+				await expect(BVHBuilderAsync(oneTriangle, Infinity)).resolves.toBeTruthy();
+			});
+		});
+	});
+	describe('Unusual cases', () => {
+		test('Stacked faces', () => {
+			let BVH = BVHBuilder(stackedTriangles, 1);
+			expect(countNodes(BVH.rootNode)).toEqual(1);
+		});
+	})
+});
 describe('BVHBuilder', () => {
 	describe('Accepted parameters', () => {
 		describe('triangles', () => {
 			test('number', () => {
-				//expect(() => BVHBuilder(0)).toThrow('Specific message');
+				expect(() => BVHBuilder(0)).toThrow(new Error('triangles must be of type Vector[][] | number[] | Float32Array, got: number'));
 			});
 			test('string', () => {
-				//expect(() => BVHBuilder("")).toThrow('Specific message');
+				expect(() => BVHBuilder("")).toThrow(new Error('triangles must be of type Vector[][] | number[] | Float32Array, got: string'));
 			});
 			test('object', () => {
-				//expect(() => BVHBuilder({})).toThrow('Specific message');
+				expect(() => BVHBuilder({})).toThrow(new Error('triangles must be of type Vector[][] | number[] | Float32Array, got: object'));
 			});
 			test('Empty array', () => {
-				//BVHBuilder([]);
-				//expect(console.warn).toBeCalled();
-				//expect(console.warn.mock.calls[0][0]).toBe(`Specific message`);
+				BVHBuilder([]);
+				expect(console.warn).toBeCalled();
+				expect(console.warn.mock.calls[0][0]).toBe(`triangles appears to be an array with 0 elements.`);
 			});
 			test('Array of face objects', () => {
 				expect(() => BVHBuilder([[{x:0, y:0, z:0}, {x:0, y:0, z:1}, {x:1, y:0, z:0}]])).not.toThrow();
@@ -51,42 +126,42 @@ describe('BVHBuilder', () => {
 		});
 		describe('maxTrianglesPerNode', () => {
 			test('0', () => {
-				expect(() => BVHBuilder(oneTriangle, 0)).toThrow('maxTrianglesPerNode must be greater than or equal to 1, got: 0');
+				expect(() => BVHBuilder(oneTriangle, 0)).toThrow(new Error('maxTrianglesPerNode must be greater than or equal to 1, got: 0'));
 			});
 			test('-1', () => {
-				expect(() => BVHBuilder(oneTriangle, -1)).toThrow('maxTrianglesPerNode must be greater than or equal to 1, got: -1');
+				expect(() => BVHBuilder(oneTriangle, -1)).toThrow(new Error('maxTrianglesPerNode must be greater than or equal to 1, got: -1'));
 			});
 			test('0.5', () => {
-				expect(() => BVHBuilder(oneTriangle, 0.5)).toThrow('maxTrianglesPerNode must be greater than or equal to 1, got: 0.5');
+				expect(() => BVHBuilder(oneTriangle, 0.5)).toThrow(new Error('maxTrianglesPerNode must be greater than or equal to 1, got: 0.5'));
 			});
 			test('1.5', () => {
 				BVHBuilder(oneTriangle, 1.5);
 				expect(console.warn).toBeCalled();
-				expect(console.warn.mock.calls[0][0]).toBe(`maxTrianglesPerNode is expected to be an integer, got: 1.5`);
+				expect(console.warn.mock.calls[0][0]).toBe('maxTrianglesPerNode is expected to be an integer, got: 1.5');
 			});
 			test('String', () => {
-				expect(() => BVHBuilder(oneTriangle, "")).toThrow('maxTrianglesPerNode must be of type number, got: string');
+				expect(() => BVHBuilder(oneTriangle, "")).toThrow(new Error('maxTrianglesPerNode must be of type number, got: string'));
 			});
 			test('Object', () => {
-				expect(() => BVHBuilder(oneTriangle, {})).toThrow('maxTrianglesPerNode must be of type number, got: object');
+				expect(() => BVHBuilder(oneTriangle, {})).toThrow(new Error('maxTrianglesPerNode must be of type number, got: object'));
 			});
 			test('Array', () => {
-				expect(() => BVHBuilder(oneTriangle, [])).toThrow('maxTrianglesPerNode must be of type number, got: object');
+				expect(() => BVHBuilder(oneTriangle, [])).toThrow(new Error('maxTrianglesPerNode must be of type number, got: object'));
 			});
 			test('Boolean', () => {
-				expect(() => BVHBuilder(oneTriangle, true)).toThrow('maxTrianglesPerNode must be of type number, got: boolean');
+				expect(() => BVHBuilder(oneTriangle, true)).toThrow(new Error('maxTrianglesPerNode must be of type number, got: boolean'));
 			});
 			test('null', () => {
-				expect(() => BVHBuilder(oneTriangle, null)).toThrow('maxTrianglesPerNode must be of type number, got: object');
+				expect(() => BVHBuilder(oneTriangle, null)).toThrow(new Error('maxTrianglesPerNode must be of type number, got: object'));
 			});
 			test('Function', () => {
-				expect(() => BVHBuilder(oneTriangle, () => false)).toThrow('maxTrianglesPerNode must be of type number, got: function');
+				expect(() => BVHBuilder(oneTriangle, () => false)).toThrow(new Error('maxTrianglesPerNode must be of type number, got: function'));
 			});
 			test('Symbol', () => {
-				expect(() => BVHBuilder(oneTriangle, Symbol())).toThrow('maxTrianglesPerNode must be of type number, got: symbol');
+				expect(() => BVHBuilder(oneTriangle, Symbol())).toThrow(new Error('maxTrianglesPerNode must be of type number, got: symbol'));
 			});
 			test('NaN', () => {
-				expect(() => BVHBuilder(oneTriangle, NaN)).toThrow('maxTrianglesPerNode is NaN');
+				expect(() => BVHBuilder(oneTriangle, NaN)).toThrow(new Error('maxTrianglesPerNode is NaN'));
 			});
 			test('undefined', () => {
 				expect(() => BVHBuilder(oneTriangle, undefined)).not.toThrow();
