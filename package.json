@@ -1,6 +1,6 @@
 {
   "name": "bvh",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "BVH",
   "main": "./dist/index.js",
   "repository": {
@@ -43,9 +43,12 @@
     "@types/three": "^0.93.4",
     "@types/webassembly-js-api": "0.0.1",
     "@types/webvr-api": "0.0.35",
+    "@typescript-eslint/eslint-plugin": "^1.6.0",
+    "@typescript-eslint/parser": "^1.6.0",
     "assemblyscript": "github:AssemblyScript/assemblyscript",
     "babel-core": "^7.0.0-bridge.0",
     "babel-jest": "^23.6.0",
+    "eslint": "^5.16.0",
     "jest": "^23.6.0",
     "npm-run-all": "^4.1.5",
     "puppeteer": "^1.9.0",
