@@ -7,7 +7,7 @@ const progressDesc = <HTMLElement>document.querySelector("#prog-status");
 const container = <HTMLElement>document.querySelector("#three-container");
 
 import * as THREE from 'three';
-import { BVHBuilderAsync, BVHBuilder, BVH } from 'BVH';
+import { BVHBuilderAsync, BVH } from 'BVH';
 
 let camera : THREE.PerspectiveCamera;
 let scene: THREE.Scene;
@@ -16,14 +16,13 @@ let mesh: THREE.Mesh;
 let x: Float32Array;
 let bvh:BVH;
 
-function concatTypedArray(resultConstructor:any, ...arrays:any[]) {
-	let totalLength = 0;
-	for (let arr of arrays) {
-		totalLength += arr.length;
-	}
-	let result = new resultConstructor(totalLength);
-	let offset = 0;
-	for (let arr of arrays) {
+function concatTypedArray(resultConstructor: Uint8ArrayConstructor, ...arrays:Uint8Array[]) {
+	const totalLength = arrays
+		.map((elem:Uint8Array) => elem.length)
+		.reduce((acc:number, elem:number) => acc + elem);
+	const result:Uint8Array = new resultConstructor(totalLength);
+	let offset:number = 0;
+	for (const arr of arrays) {
 		result.set(arr, offset);
 		offset += arr.length;
 	}
@@ -32,7 +31,8 @@ function concatTypedArray(resultConstructor:any, ...arrays:any[]) {
 
 ;(async function() {
 	setProgress("Downloading model...", 0, 1, 0, 1);
-	x = new Float32Array(await (await fetch('./resources/models/dragon_vrip.f32verts').then((response):Promise<ArrayBuffer> => {
+	const verts:Promise<Response> = fetch('./resources/models/dragon_vrip.f32verts');
+	const arrayBuffer:Promise<ArrayBuffer> = verts.then((response:Response):Promise<ArrayBuffer> => {
 		if(!response.body) return response.arrayBuffer(); // IE11
 		const bodyReader = (response as any).body.getReader();
 		const fileSize = (response as any).headers.get('content-length');
@@ -50,7 +50,8 @@ function concatTypedArray(resultConstructor:any, ...arrays:any[]) {
 				}
 			})
 		});
-	})));
+	});
+	x = new Float32Array(await arrayBuffer);
 	bvh = await BVHBuilderAsync(x, undefined, {steps: 10}, ({trianglesLeafed}) => {
 		setProgress("Generating BVH...", 0.5, 1, trianglesLeafed, x.length / 9);
 	});
