@@ -1,0 +1,17 @@
+#! /bin/bash
+
+function echo-and-exit {
+	echo $2
+	exit $1
+} ; export -f echo-and-exit
+
+echo "Running pre-commit hook..."
+
+echo "Comparing pre-commit scripts"
+cmp --silent ./.git/hooks/pre-commit ./bin/pre-commit || echo-and-exit 1 "Error: .git's pre-commit differs from bin's pre-commit!"
+
+echo "Running npm test"
+npm test || echo-and-exit 2 "Error: npm test failed!"
+
+echo "Running npm run lint"
+npm run lint || echo-and-exit 3 "Error: npm run lint failed!"

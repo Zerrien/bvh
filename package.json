@@ -1,6 +1,6 @@
 {
   "name": "bvh",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "description": "BVH",
   "main": "./dist/index.js",
   "repository": {
@@ -16,7 +16,8 @@
     "start": "npm-run-all --parallel start:dev-server start:test-runner",
     "start:dev-server": "webpack-dev-server",
     "start:test-runner": "jest --watch",
-    "test": "jest"
+    "test": "jest",
+    "lint": "eslint --ignore-pattern *_old.js ./src/*"
   },
   "keywords": [
     "BVH",
