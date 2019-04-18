@@ -1,0 +1,28 @@
+version: 2.1
+
+executors:
+    node-10:
+        docker:
+            - image: circleci/node:10.15.3
+
+jobs:
+    build:
+        executor: node-10
+        steps:
+            - checkout
+            - run: npm install
+            - run: npm run build
+            - run: npm run test:ci
+            - run: npm run lint
+            - store_artifacts:
+                path: ~/project/dist/
+            - store_artifacts:
+                path: ~/project/coverage/
+            - store_test_results:
+                path: ~/project/reporters/
+
+workflows:
+    version: 2
+    main:
+        jobs:
+            - build

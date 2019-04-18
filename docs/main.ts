@@ -26,6 +26,7 @@ function concatTypedArray(resultConstructor: Uint8ArrayConstructor, ...arrays:Ui
 		result.set(arr, offset);
 		offset += arr.length;
 	}
+	console.log("??")
 	return result;
 }
 

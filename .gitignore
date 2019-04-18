@@ -4,6 +4,7 @@
 
 # Development files
 coverage/
+reporters/
 node_modules/
 
 # Built artifacts

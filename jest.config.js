@@ -8,7 +8,16 @@ module.exports = {
   collectCoverageFrom: [
     "src/**/*.{js,ts}"
   ],
+  coveragePathIgnorePatterns: [
+    ".*_old.js",
+  ],
   moduleNameMapper: {
     '^@src/(.*)$': '<rootDir>/src/$1',
   },
+  reporters: [
+    "default",
+    ["jest-junit", {
+      outputDirectory: "./reporters/jest/"
+    }],
+  ],
 };
