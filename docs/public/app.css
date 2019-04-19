@@ -1,10 +1,22 @@
 html {
 	background-color: black;
 }
+
 body {
 	padding: 0;
 	margin: 0;
 }
+
+#spinner {
+	font-family: monospace;
+	color: white;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	font-size: 5em;
+	transform: translateX(-50%) translateY(-50%);
+}
+
 #prog-bar {
 	position: absolute;
 	bottom: 32px;
@@ -23,6 +35,7 @@ body {
 	padding: 4px;
 	position: relative;
 }
+
 #prog-text {
 	position: absolute;
 	top: 50%;
@@ -32,6 +45,7 @@ body {
 	mix-blend-mode: difference;
 	font-family: monospace;
 }
+
 #prog-inter {
 	background-color: white;
 	width: 0%;
@@ -40,10 +54,12 @@ body {
 	height: 100%;
 	border-radius: 16px;
 }
+
 #prog-status {
 	text-align: center;
 	font-family: monospace;
 }
+
 #three-container {
 	width: 100%;
 	height: 100%;
