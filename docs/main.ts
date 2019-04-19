@@ -2,9 +2,9 @@ import "@babel/polyfill"; // IE11
 import 'whatwg-fetch'; // IE11
 
 const emojiRange = [128513, 128591];
-const emoji = Math.floor((emojiRange[1] - emojiRange[0]) * Math.random()) + emojiRange[0];
 
 const spinnerElement = <HTMLElement>document.querySelector("#spinner");
+const emoji = Math.floor((emojiRange[1] - emojiRange[0]) * Math.random()) + emojiRange[0];
 spinnerElement.innerHTML = "&#" + emoji + ";";
 let spinner_rot = 0;
 const spinnerInterval = setInterval(function() {
@@ -15,30 +15,78 @@ const progressText = <HTMLElement>document.querySelector("#prog-text");
 const progressDesc = <HTMLElement>document.querySelector("#prog-status");
 const container = <HTMLElement>document.querySelector("#three-container");
 
-import * as THREE from 'three';
-import { BVHBuilderAsync, BVH } from 'BVH';
+[
+	{
+		name: "webworker",
+		func: function() {
+			return new Promise(async (res, rej) => {
+				if(renderer) {
+					container.removeChild(renderer.domElement);
+					spinnerElement.style.display = "block";
+					const emoji = Math.floor((emojiRange[1] - emojiRange[0]) * Math.random()) + emojiRange[0];
+					spinnerElement.innerHTML = "&#" + emoji + ";";
+				}
+				vertexPoints = await downloadModel();
+				setProgress("Downloading model...", 0, 0.5, 1, 1);
+				initThree();
+				const sTime = Date.now();
+				const myWorker = new Worker('./worker.js');
+				myWorker.onmessage = (e:MessageEvent) => {
+					if(e.data.message === "progress") {
+						setProgress("Generating BVH...", 0.5, 1, e.data.data.value.trianglesLeafed, vertexPoints.length / 9);
+					} else if (e.data.message === "done") {
+						setProgress("Done!", 0.5, 1, 1, 1);
+						spinnerElement.style.display = "none";
+						console.log(Date.now() - sTime);
+						res();
+					}
+				}
+				myWorker.postMessage({message: "bvh_info", data:{facesArray: vertexPoints}});
+			})
+		},
+	},
+	{
+		name: "async10",
+		func: function() {
+			return new Promise(async (res, rej) => {
+				if(renderer) {
+					container.removeChild(renderer.domElement);
+					spinnerElement.style.display = "block";
+					const emoji = Math.floor((emojiRange[1] - emojiRange[0]) * Math.random()) + emojiRange[0];
+					spinnerElement.innerHTML = "&#" + emoji + ";";
+				}
+				vertexPoints = await downloadModel();
+				setProgress("Downloading model...", 0, 0.5, 1, 1);
+				initThree();
+				const sTime = Date.now();
+				bvh = await BVHBuilderAsync(vertexPoints, undefined, {steps: 10}, ({trianglesLeafed}) => {
+					setProgress("Generating BVH...", 0.5, 1, trianglesLeafed, vertexPoints.length / 9);
+				});
+				setProgress("Done!", 0.5, 1, 1, 1);
+				spinnerElement.style.display = "none";
+				console.log(Date.now() - sTime);
+				res();
+			});
+		},
+	},
+].forEach(({name, func}) => {
+	const buttonElement = <HTMLElement>document.querySelector(`#button_${name}`);
+	buttonElement.addEventListener("click", () => {
+		if(buttonElement.classList.contains('disabled')) return;
+		document.querySelectorAll(".button").forEach(e => {
+			e.classList.add("disabled");
+		});
+		func().then(() => {
+			document.querySelectorAll(".button").forEach(e => {
+				e.classList.remove("disabled");
+			});
+		});
+	});
+});
 
-let camera : THREE.PerspectiveCamera;
-let scene: THREE.Scene;
-let renderer: THREE.WebGLRenderer;
-let mesh: THREE.Mesh;
 let vertexPoints: Float32Array;
-let bvh:BVH;
 
-function concatTypedArray(resultConstructor: Uint8ArrayConstructor, ...arrays:Uint8Array[]) {
-	const totalLength = arrays
-		.map((elem:Uint8Array) => elem.length)
-		.reduce((acc:number, elem:number) => acc + elem);
-	const result:Uint8Array = new resultConstructor(totalLength);
-	let offset:number = 0;
-	for (const arr of arrays) {
-		result.set(arr, offset);
-		offset += arr.length;
-	}
-	return result;
-}
-
-;(async function() {
+async function downloadModel() {
 	setProgress("Downloading model...", 0, 1, 0, 1);
 	const verts:Promise<Response> = fetch('./resources/models/dragon_vrip.f32verts');
 	const arrayBuffer:Promise<ArrayBuffer> = verts.then((response:Response):Promise<ArrayBuffer> => {
@@ -60,13 +108,30 @@ function concatTypedArray(resultConstructor: Uint8ArrayConstructor, ...arrays:Ui
 			});
 		});
 	});
-	vertexPoints = new Float32Array(await arrayBuffer);
-	bvh = await BVHBuilderAsync(vertexPoints, undefined, {steps: 10}, ({trianglesLeafed}) => {
-		setProgress("Generating BVH...", 0.5, 1, trianglesLeafed, vertexPoints.length / 9);
-	});
-	setProgress("Done!", 0.5, 1, 1, 1);
-	initThree();
-})();
+	return new Float32Array(await arrayBuffer);
+}
+
+import * as THREE from 'three';
+import { BVHBuilderAsync, BVHBuilder, BVH } from 'BVH';
+
+let camera : THREE.PerspectiveCamera;
+let scene: THREE.Scene;
+let renderer: THREE.WebGLRenderer;
+let mesh: THREE.Mesh;
+let bvh:BVH;
+
+function concatTypedArray(resultConstructor: Uint8ArrayConstructor, ...arrays:Uint8Array[]) {
+	const totalLength = arrays
+		.map((elem:Uint8Array) => elem.length)
+		.reduce((acc:number, elem:number) => acc + elem);
+	const result:Uint8Array = new resultConstructor(totalLength);
+	let offset:number = 0;
+	for (const arr of arrays) {
+		result.set(arr, offset);
+		offset += arr.length;
+	}
+	return result;
+}
 
 function setProgress(text: string, start:number, end:number, cur:number, max:number) {
 	const percentage = `${(Math.floor((start + (end - start) * cur / max) * 10000) / 100).toFixed(2)}%`;
@@ -75,9 +140,15 @@ function setProgress(text: string, start:number, end:number, cur:number, max:num
 	progressDesc.innerText = text;
 }
 
+;(function() {
+	progressDesc.innerText = "Click a button to begin...";
+})();
+
+function clearSpinner() {
+	
+}
+
 function initThree() {
-	clearInterval(spinnerInterval);
-	spinnerElement.style.display = "none";
 	camera = new THREE.PerspectiveCamera(0.75, window.innerWidth / window.innerHeight, 1, 100);
 	camera.position.set(0, 10, 10);
 	camera.lookAt(0, 0.1, 0);
@@ -95,7 +166,7 @@ function initThree() {
 	renderer.setPixelRatio( window.devicePixelRatio );
 	renderer.setSize( window.innerWidth, window.innerHeight );
 	if(container) {
-		container.appendChild( renderer.domElement );
+		container.appendChild(renderer.domElement);
 		animate();
 	}
 }

@@ -1,5 +1,7 @@
 html {
 	background-color: black;
+	font-family: monospace;
+	color: white;
 }
 
 body {
@@ -7,9 +9,44 @@ body {
 	margin: 0;
 }
 
+#description {
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 256px;
+	text-align: center;
+}
+
+#button-container {
+	position: absolute;
+	top: 0;
+	left: 0;
+	margin: 8px;
+}
+
+.button {
+	text-align: center;
+	border: 1px solid white;
+	border-radius: 8px;
+	padding: 8px;
+	margin: 4px;
+	cursor: pointer;
+}
+
+.button:hover {
+	background-color: rgba(255, 255, 255, 0.5);
+}
+
+.button:active {
+	background-color: rgba(255, 255, 255, 0.1);
+}
+
+.button.disabled {
+	background-color: white;
+	cursor: default;
+}
+
 #spinner {
-	font-family: monospace;
-	color: white;
 	position: absolute;
 	top: 50%;
 	left: 50%;
@@ -22,7 +59,6 @@ body {
 	bottom: 32px;
 	left: 50%;
 	transform: translateX(-50%);
-	color: white;
 }
 
 #prog-bar-itself {
@@ -40,10 +76,8 @@ body {
 	position: absolute;
 	top: 50%;
 	left: 50%;
-	color: white;
 	transform: translateX(-50%) translateY(-50%);
 	mix-blend-mode: difference;
-	font-family: monospace;
 }
 
 #prog-inter {
@@ -57,7 +91,6 @@ body {
 
 #prog-status {
 	text-align: center;
-	font-family: monospace;
 }
 
 #three-container {

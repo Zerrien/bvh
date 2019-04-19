@@ -21,7 +21,7 @@ async function buildBVH(array:any ) {
 	});
 	(self as any).postMessage({
 		message: "done"
-	})
+	});
 }
 
 function rayCast(origin:any, direction:any) {
