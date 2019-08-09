@@ -17,7 +17,7 @@
     "start:dev-server": "webpack-dev-server",
     "start:test-runner": "jest --watch",
     "test": "jest",
-    "test:ci": "npm test -- --ci --runInBand",
+    "test:ci": "npm test -- --ci --runInBand --coverageReporters=text-lcov | coveralls",
     "lint": "eslint --ignore-pattern *_old.js ./src/*"
   },
   "keywords": [
@@ -35,11 +35,13 @@
     "url": "https://github.com/Zerrien/bvh/issues"
   },
   "homepage": "https://zerrien.github.io/bvh/public/",
-  "dependencies": {},
+  "dependencies": {
+  },
   "devDependencies": {
     "@babel/core": "^7.1.6",
     "@babel/polyfill": "^7.0.0",
     "@babel/preset-env": "^7.1.6",
+    "@babel/preset-typescript": "^7.3.3",
     "@types/jest": "^23.3.5",
     "@types/node": "^10.12.0",
     "@types/three": "^0.93.4",
@@ -50,6 +52,7 @@
     "assemblyscript": "github:AssemblyScript/assemblyscript",
     "babel-core": "^7.0.0-bridge.0",
     "babel-jest": "^23.6.0",
+    "coveralls": "^3.0.6",
     "eslint": "^5.16.0",
     "jest": "^23.6.0",
     "jest-junit": "^6.3.0",
