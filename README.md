@@ -1,3 +1,12 @@
+<p align="center">
+	<a href='https://circleci.com/gh/Zerrien/bvh'>
+		<img src="https://circleci.com/gh/Zerrien/bvh.svg?style=svg" alt='Build Status'/>
+	</a>
+	<a href='https://coveralls.io/github/Zerrien/bvh?branch=master'>
+		<img src='https://coveralls.io/repos/github/Zerrien/bvh/badge.svg?branch=master' alt='Coverage Status' />
+	</a>
+</p>
+
 # bvh
 [Bounding volume hierarchy](https://en.wikipedia.org/wiki/Bounding_volume_hierarchy) data structure library written in TypeScript. Specifically implemented for 3-dimensional points.
 
