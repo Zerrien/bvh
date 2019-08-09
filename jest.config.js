@@ -20,4 +20,11 @@ module.exports = {
       outputDirectory: "./reporters/jest/"
     }],
   ],
+  coverageReporters:[
+    "text-lcov",
+    "lcov",
+    "json",
+    "text",
+    "clover",
+  ],
 };

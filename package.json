@@ -1,6 +1,6 @@
 {
   "name": "bvh",
-  "version": "0.6.5",
+  "version": "0.6.6",
   "description": "BVH",
   "main": "./dist/index.js",
   "repository": {
@@ -17,7 +17,7 @@
     "start:dev-server": "webpack-dev-server",
     "start:test-runner": "jest --watch",
     "test": "jest",
-    "test:ci": "npm test -- --ci --runInBand --coverageReporters=text-lcov | coveralls",
+    "test:ci": "npm test -- --ci --runInBand | coveralls",
     "lint": "eslint --ignore-pattern *_old.js ./src/*"
   },
   "keywords": [
