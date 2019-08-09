@@ -8,7 +8,7 @@ function echo-and-exit {
 echo "Running pre-commit hook..."
 
 echo "Comparing pre-commit scripts"
-cmp --silent ./.git/hooks/pre-commit ./bin/pre-commit || echo-and-exit 1 "Error: .git's pre-commit differs from bin's pre-commit!"
+cmp --silent ./.git/hooks/pre-commit ./bin/pre-commit || echo-and-exit 1 "Error: .git's pre-commit differs from bin's pre-commit! Run ./bootstap.sh"
 
 echo "Running npm test"
 npm test || echo-and-exit 2 "Error: npm test failed!"
