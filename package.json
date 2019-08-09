@@ -1,6 +1,6 @@
 {
   "name": "bvh",
-  "version": "0.6.6",
+  "version": "0.6.7",
   "description": "BVH",
   "main": "./dist/index.js",
   "repository": {
@@ -50,22 +50,22 @@
     "@typescript-eslint/parser": "1.6.0",
     "assemblyscript": "github:AssemblyScript/assemblyscript",
     "babel-core": "7.0.0-bridge.0",
-    "babel-jest": "23.6.0",
+    "babel-jest": "24.8.0",
     "coveralls": "3.0.6",
     "eslint": "5.16.0",
-    "jest": "23.6.0",
+    "jest": "24.8.0",
     "jest-junit": "6.3.0",
     "npm-run-all": "4.1.5",
-    "puppeteer": "1.9.0",
+    "puppeteer": "1.19.0",
     "regenerator-runtime": "0.12.1",
     "three": "0.97.0",
-    "ts-jest": "23.10.5",
+    "ts-jest": "24.0.2",
     "ts-loader": "5.3.3",
     "typescript": "3.4.3",
     "wabt": "1.0.6",
     "webpack": "4.21.0",
     "webpack-cli": "3.1.2",
-    "webpack-dev-server": "3.1.9",
+    "webpack-dev-server": "3.1.11",
     "whatwg-fetch": "3.0.0"
   }
 }
