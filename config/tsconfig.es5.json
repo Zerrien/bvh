@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "es5",
     "module": "commonjs",
-    "outDir": "./dist/es5",
+    "outDir": "../dist/es5",
     "sourceMap": true,
     "strict": true,
     "allowJs": true,
@@ -20,10 +20,10 @@
     "webworker"
   ],
   "include": [
-    "./src/**/*",
-    "./public/**/*"
+    "../src/**/*",
+    "../public/**/*"
   ],
   "exclude": [
-    "node_modules"
+    "../node_modules"
   ]
 }

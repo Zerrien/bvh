@@ -1,6 +1,6 @@
 {
   "name": "bvh",
-  "version": "0.6.8",
+  "version": "0.6.9",
   "description": "BVH",
   "main": "./dist/index.js",
   "repository": {
@@ -8,17 +8,17 @@
     "url": "https://github.com/Zerrien/bvh"
   },
   "scripts": {
+    "start": "npm-run-all --parallel start:dev-server start:test-runner",
     "pre-publish": "npm publish --dry-run",
     "build": "npm-run-all --parallel build:es6 build:es5 build:docs",
-    "build:es6": "tsc",
-    "build:es5": "tsc -p ./tsconfig.es5.json",
-    "build:docs": "webpack",
-    "start": "npm-run-all --parallel start:dev-server start:test-runner",
-    "start:dev-server": "webpack-dev-server",
-    "start:test-runner": "jest --watch",
-    "test": "jest",
+    "build:es6": "tsc --project ./config/tsconfig.json",
+    "build:es5": "tsc --project ./config/tsconfig.es5.json",
+    "build:docs": "webpack --config ./config/webpack.config.js",
+    "start:dev-server": "webpack-dev-server --config ./config/webpack.config.js",
+    "start:test-runner": "jest --config ./config/jest.config.js --watch",
+    "test": "jest --config ./config/jest.config.js ",
     "test:ci": "npm test -- --ci --runInBand | coveralls",
-    "lint": "eslint --ignore-pattern *_old.js ./src/*"
+    "lint": "eslint --config ./config/eslint.config.js --ignore-pattern *_old.js ./src/**"
   },
   "keywords": [
     "BVH",
@@ -37,7 +37,7 @@
   "homepage": "https://zerrien.github.io/bvh/public/",
   "dependencies": {},
   "devDependencies": {
-    "@babel/core": "7.1.6",
+    "@babel/core": "^7.7.4",
     "@babel/polyfill": "7.0.0",
     "@babel/preset-env": "7.1.6",
     "@babel/preset-typescript": "7.3.3",

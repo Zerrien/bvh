@@ -8,9 +8,15 @@ docs/
 public/
 bin/
 tests/
+config/
+reporters/
 
 *.sublime-project
 *.sublime-workspace
 
-/*.{ts,js,json}
+/*.{ts,js,json,yml}
 /.babelrc
+/.circleci
+/.github
+
+bootstrap.sh

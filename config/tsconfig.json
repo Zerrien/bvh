@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "es6",
     "module": "commonjs",
-    "outDir": "./dist",
+    "outDir": "../dist",
     "sourceMap": true,
     "strict": true,
     "allowJs": true,
@@ -16,10 +16,10 @@
     "webworker",
   ],
   "include": [
-    "./src/**/*",
-    "./public/**/*"
+    "../src/**/*",
+    "../public/**/*"
   ],
   "exclude": [
-    "node_modules"
+    "../node_modules"
   ]
 }
