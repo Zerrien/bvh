@@ -16,7 +16,6 @@ reporters/
 
 /*.{ts,js,json,yml}
 /.babelrc
-/.circleci
 /.github
 
 bootstrap.sh
