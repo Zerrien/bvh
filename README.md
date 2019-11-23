@@ -46,7 +46,9 @@ Bounding Volume Hierarchies trade memory for ray intersection computation speed.
 ## Development
 
 `npm install`
+
 `npm start`
+	
 Navigate to: `http://localhost:8080/` to see a local copy of the GitHub Pages.
 
 ### Goals
