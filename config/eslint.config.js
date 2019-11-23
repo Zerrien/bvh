@@ -10,5 +10,7 @@ module.exports = {
 	},
 	rules: {
 		"@typescript-eslint/indent": ["error", "tab"],
+		"comma-dangle": ["error", "always-multiline"],
+		"eol-last": ["error", "always"],
 	},
 }

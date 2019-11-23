@@ -156,7 +156,7 @@ function splitNode(node: BVHNode, maxTriangles:number, bboxArray:Float32Array, b
 	var extentsLength = [
 		node.extentsMax[0] - node.extentsMin[0],
 		node.extentsMax[1] - node.extentsMin[1],
-		node.extentsMax[2] - node.extentsMin[2]
+		node.extentsMax[2] - node.extentsMin[2],
 	];
 
 	splitOrder.sort((axis0, axis1) => extentsLength[axis1] - extentsLength[axis0]);
@@ -230,7 +230,7 @@ function calcExtents(bboxArray:Float32Array, startIndex:number, endIndex:number,
 	}
 	return [
 		[minX - expandBy, minY - expandBy, minZ - expandBy],
-		[maxX + expandBy, maxY + expandBy, maxZ + expandBy]
+		[maxX + expandBy, maxY + expandBy, maxZ + expandBy],
 	];
 }
 

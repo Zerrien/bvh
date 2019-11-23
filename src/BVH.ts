@@ -63,7 +63,7 @@ export class BVH {
 			intersectingTriangles.push({
 				//triangle: [a.clone(), b.clone(), c.clone()],
 				triangleIndex: triIndex,
-				intersectionPoint: intersectionPoint
+				intersectionPoint: intersectionPoint,
 			});
 		}
 

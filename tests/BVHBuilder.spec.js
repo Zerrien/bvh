@@ -182,7 +182,7 @@ describe('BVHBuilder', () => {
 /*
 // Integration tests, heavy. ~1.5s ea.
 import { readFileSync } from 'fs'
-const vertArraybuffer = readFileSync('./docs/public/resources/models/bun_zipper.f32verts').buffer;
+const vertArraybuffer = readFileSync('./docs/resources/models/bun_zipper.f32verts').buffer;
 const masterArray = new Float32Array(vertArraybuffer);
 describe('BVHBuilders', () => {
 	let anArray;

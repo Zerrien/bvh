@@ -16,7 +16,7 @@ module.exports = {
 		alias: {
 			"@src": path.resolve(__dirname, "../src"),
 			"BVH": path.resolve(__dirname, "../src"),
-		}
+		},
 	},
 	module: {
 		rules: [
