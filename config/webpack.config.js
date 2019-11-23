@@ -8,7 +8,7 @@ module.exports = {
 		worker: "./docs/worker.ts",
 	},
 	output: {
-		path: path.resolve(__dirname, "../docs/public"),
+		path: path.resolve(__dirname, "../docs"),
 		filename: "./[name].js",
 	},
 	resolve: {
@@ -30,7 +30,7 @@ module.exports = {
 		],
 	},
 	devServer: {
-		contentBase: "./docs/public",
+		contentBase: "./docs",
 		stats: 'errors-only',
 	},
 };
