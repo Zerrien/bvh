@@ -1,6 +1,7 @@
 # IDE files
 *.sublime-project
 *.sublime-workspace
+*.code-workspace
 
 # Development files
 coverage/
