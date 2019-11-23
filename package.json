@@ -1,6 +1,6 @@
 {
   "name": "bvh",
-  "version": "0.6.11",
+  "version": "0.6.12",
   "description": "BVH",
   "main": "./dist/index.js",
   "repository": {
@@ -17,7 +17,7 @@
     "build:docs": "webpack --config ./config/webpack.config.js",
     "start:dev-server": "webpack-dev-server --config ./config/webpack.config.js",
     "start:test-runner": "jest --config ./config/jest.config.js --watch",
-    "test:ci": "npm test -- --ci --runInBand | coveralls",
+    "test:ci": "npm test -- --ci --runInBand",
     "lint": "eslint --config ./config/eslint.config.js --ignore-pattern *_old.js ./src/**"
   },
   "keywords": [

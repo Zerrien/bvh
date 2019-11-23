@@ -13,10 +13,10 @@ cmp --silent ./.git/hooks/pre-push ./bin/pre-push || echo-and-exit 1 "Error: .gi
 echo "Checking the diff for a version update."
 
 current_branch=$(git branch | cut -d ' ' -f2)
-remote_branch=$(git branch -r | xargs)
+remote_branch="origin/master"
 echo "Comparing current branch: \"$current_branch\" to remote branch: \"$remote_branch\""
 
-line_count=$(git diff "$current_branch".."$remote_branch" ./package.json | grep -P '[-+]\s*"version":\s*"\d+\.\d+\.\d+",' | wc -l)
+line_count=$(git diff "$current_branch".."$remote_branch" ./package.json | egrep '[-+]\s*"version":\s*"\d+\.\d+\.\d+",' | wc -l)
 [[ 2 -eq  $line_count ]] || echo-and-exit 2 "Error: No lines found updating package.json's version."
 
 commit_count=$(git log "$remote_branch".."$current_branch" --oneline | wc -l)
