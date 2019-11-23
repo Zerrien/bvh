@@ -22,7 +22,7 @@ export async function asyncWork(workCheck:Evaluator, work:Work, options:Asyncify
 		console.warn("Asyncify got both steps and ms, defaulting to steps.");
 	}
 	const worker:Generator = (options.steps !== undefined ? percentageAsyncify : timeAsyncify)(workCheck, work, options);
-	let done: boolean;
+	let done: boolean | undefined;
 	let nodesSplit: number;
 	while(!({value: nodesSplit, done} = worker.next(), done)) {
 		if(typeof progressCallback !== 'undefined') {
