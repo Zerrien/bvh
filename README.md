@@ -12,7 +12,7 @@
 
 ## Demo
 
-[GitHub Pages Demo Site](https://zerrien.github.io/bvh/public/)
+[GitHub Pages Demo Site](https://zerrien.github.io/bvh/)
 
 ## Use
 
