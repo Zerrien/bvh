@@ -72,16 +72,10 @@ function splitNode(node: BVHNode, maxTriangles:number, bboxArray:Float32Array, b
 	let rightNode:number[][] = [ [],[],[] ];
 	let extentCenters:number[] = [node.centerX(), node.centerY(), node.centerZ()];
 
-	let objectCenter:number[] = [];
-	objectCenter.length = 3;
-
 	for (let i = startIndex; i < endIndex; i++) {
 		let idx = i * 7 + 1;
-		objectCenter[0] = (bboxArray[idx] + bboxArray[idx++ + 3]) * 0.5; // center = (min + max) / 2
-		objectCenter[1] = (bboxArray[idx] + bboxArray[idx++ + 3]) * 0.5; // center = (min + max) / 2
-		objectCenter[2] = (bboxArray[idx] + bboxArray[idx + 3]) * 0.5; // center = (min + max) / 2
 		for (let j = 0; j < 3; j++) {
-			if (objectCenter[j] < extentCenters[j]) {
+			if (bboxArray[idx] + bboxArray[idx++ + 3] < extentCenters[j]) {
 				leftNode[j].push(i);
 			} else {
 				rightNode[j].push(i);

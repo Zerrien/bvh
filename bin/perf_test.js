@@ -32,18 +32,14 @@ function newWorker(type, data) {
 
 (async function() {
     let speedArray = [];
-    for(let i = 0; i < 1; i++) {
-        speedArray.push(await newWorker("new", objArray));
-    }
-    console.log("new", speedArray);
     let speedArray2 = [];
-    for(let i = 0; i < 1; i++) {
-        speedArray2.push(await newWorker("old", objArray));
-    }
-    console.log("old", speedArray2);
     let speedArray3 = [];
-    for(let i = 0; i < 1; i++) {
+    for(let i = 0; i < 5; i++) {
+        speedArray.push(await newWorker("new", objArray));
+        speedArray2.push(await newWorker("old", objArray));
         speedArray3.push(await newWorker("new_stuff", anArray));
     }
+    console.log("new", speedArray);
+    console.log("old", speedArray2);
     console.log("new arr", speedArray3);
 })();

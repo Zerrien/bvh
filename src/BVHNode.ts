@@ -28,15 +28,15 @@ export class BVHNode {
 	}
 
 	centerX() {
-		return (this.extentsMin[0] + this.extentsMax[0]) * 0.5;
+		return (this.extentsMin[0] + this.extentsMax[0]);
 	}
 
 	centerY() {
-		return (this.extentsMin[1] + this.extentsMax[1]) * 0.5;
+		return (this.extentsMin[1] + this.extentsMax[1]);
 	}
 
 	centerZ() {
-		return (this.extentsMin[2] + this.extentsMax[2]) * 0.5;
+		return (this.extentsMin[2] + this.extentsMax[2]);
 	}
 
 	clearShapes() {
