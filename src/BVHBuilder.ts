@@ -8,24 +8,8 @@ import { BVH } from "./BVH";
 import { asyncWork } from './utils'
 
 export function BVHBuilder(triangles:unknown | Vector[][] | number[] | Float32Array, maxTrianglesPerNode:number = 10) {
-	if(typeof maxTrianglesPerNode !== 'number') throw new Error(`maxTrianglesPerNode must be of type number, got: ${typeof maxTrianglesPerNode}`);
-	if(maxTrianglesPerNode < 1) throw new Error(`maxTrianglesPerNode must be greater than or equal to 1, got: ${maxTrianglesPerNode}`);
-	if(Number.isNaN(maxTrianglesPerNode)) throw new Error(`maxTrianglesPerNode is NaN`);
-	if(!Number.isInteger(maxTrianglesPerNode)) console.warn(`maxTrianglesPerNode is expected to be an integer, got: ${maxTrianglesPerNode}`);
-	let trianglesArray:Float32Array;
-	//Vector[][] | number[] | Float32Array
-	if(Array.isArray(triangles) && triangles.length === 0) {
-		console.warn(`triangles appears to be an array with 0 elements.`);
-	}
-	if(isFaceArray(triangles)) {
-		trianglesArray = buildTriangleArray(triangles);
-	} else if (triangles instanceof Float32Array) {
-		trianglesArray = triangles;
-	} else if (isNumberArray(triangles)) {
-		trianglesArray = new Float32Array(triangles)
-	} else {
-		throw new Error(`triangles must be of type Vector[][] | number[] | Float32Array, got: ${typeof triangles}`);
-	}
+	validateMaxTrianglesPerNode(maxTrianglesPerNode);
+	let trianglesArray:Float32Array = validateTriangles(triangles);
 	let bboxArray:Float32Array = calcBoundingBoxes(trianglesArray);
 	// clone a helper array
 	let bboxHelper:Float32Array = new Float32Array(bboxArray.length);
@@ -47,24 +31,8 @@ export function BVHBuilder(triangles:unknown | Vector[][] | number[] | Float32Ar
 }
 
 export async function BVHBuilderAsync(triangles:unknown | Vector[][] | number[] | Float32Array, maxTrianglesPerNode:number = 10, asyncParams:AsyncifyParams = {}, progressCallback?:(obj:BVHProgress) => void):Promise<BVH> {
-	if(typeof maxTrianglesPerNode !== 'number') throw new Error(`maxTrianglesPerNode must be of type number, got: ${typeof maxTrianglesPerNode}`);
-	if(maxTrianglesPerNode < 1) throw new Error(`maxTrianglesPerNode must be greater than or equal to 1, got: ${maxTrianglesPerNode}`);
-	if(Number.isNaN(maxTrianglesPerNode)) throw new Error(`maxTrianglesPerNode is NaN`);
-	if(!Number.isInteger(maxTrianglesPerNode)) console.warn(`maxTrianglesPerNode is expected to be an integer, got: ${maxTrianglesPerNode}`);
-	let trianglesArray:Float32Array;
-	//Vector[][] | number[] | Float32Array
-	if(Array.isArray(triangles) && triangles.length === 0) {
-		console.warn(`triangles appears to be an array with 0 elements.`);
-	}
-	if(isFaceArray(triangles)) {
-		trianglesArray = buildTriangleArray(triangles);
-	} else if (triangles instanceof Float32Array) {
-		trianglesArray = triangles;
-	} else if (isNumberArray(triangles)) {
-		trianglesArray = new Float32Array(triangles)
-	} else {
-		throw new Error(`triangles must be of type Vector[][] | number[] | Float32Array, got: ${typeof triangles}`);
-	}
+	validateMaxTrianglesPerNode(maxTrianglesPerNode);
+	let trianglesArray:Float32Array = validateTriangles(triangles);
 	let bboxArray:Float32Array = calcBoundingBoxes(trianglesArray);
 	// clone a helper array
 	let bboxHelper:Float32Array = new Float32Array(bboxArray.length);
@@ -307,4 +275,29 @@ function isNumberArray(testArray: unknown): testArray is number[] {
 		if(typeof testArray[i] !== "number") return false;
 	}
 	return true;
+}
+
+function validateMaxTrianglesPerNode(maxTrianglesPerNode:number):void {
+	if(typeof maxTrianglesPerNode !== 'number') throw new Error(`maxTrianglesPerNode must be of type number, got: ${typeof maxTrianglesPerNode}`);
+	if(maxTrianglesPerNode < 1) throw new Error(`maxTrianglesPerNode must be greater than or equal to 1, got: ${maxTrianglesPerNode}`);
+	if(Number.isNaN(maxTrianglesPerNode)) throw new Error(`maxTrianglesPerNode is NaN`);
+	if(!Number.isInteger(maxTrianglesPerNode)) console.warn(`maxTrianglesPerNode is expected to be an integer, got: ${maxTrianglesPerNode}`);
+}
+
+function validateTriangles(triangles:unknown | Vector[][] | number[] | Float32Array): Float32Array {
+	let trianglesArray:Float32Array;
+	//Vector[][] | number[] | Float32Array
+	if(Array.isArray(triangles) && triangles.length === 0) {
+		console.warn(`triangles appears to be an array with 0 elements.`);
+	}
+	if(isFaceArray(triangles)) {
+		trianglesArray = buildTriangleArray(triangles);
+	} else if (triangles instanceof Float32Array) {
+		trianglesArray = triangles;
+	} else if (isNumberArray(triangles)) {
+		trianglesArray = new Float32Array(triangles)
+	} else {
+		throw new Error(`triangles must be of type Vector[][] | number[] | Float32Array, got: ${typeof triangles}`);
+	}
+	return trianglesArray
 }

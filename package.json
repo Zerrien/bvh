@@ -18,7 +18,8 @@
     "start:dev-server": "webpack-dev-server --config ./config/webpack.config.js",
     "start:test-runner": "jest --config ./config/jest.config.js --watch",
     "test:ci": "npm test -- --ci --runInBand",
-    "lint": "eslint --config ./config/eslint.config.js --ignore-pattern '*_old.js' --ignore-pattern '*.json' ./src/** ./config/**"
+    "lint": "eslint --config ./config/eslint.config.js --ignore-pattern '*_old.js' --ignore-pattern '*.json' ./src/** ./config/**",
+    "test:perf": "node ./bin/perf_test.js"
   },
   "keywords": [
     "BVH",
