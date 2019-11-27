@@ -32,7 +32,6 @@ module.exports = {
 		}],
 	],
 	coverageReporters: [
-		"text-lcov",
 		"lcov",
 		"json",
 		"text",
