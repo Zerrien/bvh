@@ -179,7 +179,6 @@ describe('BVHBuilder', () => {
 	})
 });
 
-/*
 // Integration tests, heavy. ~1.5s ea.
 import { readFileSync } from 'fs'
 const vertArraybuffer = readFileSync('./docs/resources/models/bun_zipper.f32verts').buffer;
@@ -226,4 +225,3 @@ describe('BVHBuilders', () => {
 		expect(countNodes(BVH._rootNode)).toEqual(19755);
 	});
 });
-*/

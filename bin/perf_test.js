@@ -1,5 +1,5 @@
 const { readFileSync } = require('fs');
-const vertArraybuffer = readFileSync('./docs/resources/models/bun_zipper.f32verts').buffer;
+const vertArraybuffer = readFileSync('./docs/resources/models/dragon_vrip.f32verts').buffer;
 const masterArray = new Float32Array(vertArraybuffer);
 const anArray = new Float32Array(vertArraybuffer);
 const objArray = [];
@@ -32,18 +32,18 @@ function newWorker(type, data) {
 
 (async function() {
     let speedArray = [];
-    for(let i = 0; i < 10; i++) {
+    for(let i = 0; i < 1; i++) {
         speedArray.push(await newWorker("new", objArray));
     }
-    console.log(speedArray);
+    console.log("new", speedArray);
     let speedArray2 = [];
-    for(let i = 0; i < 10; i++) {
+    for(let i = 0; i < 1; i++) {
         speedArray2.push(await newWorker("old", objArray));
     }
-    console.log(speedArray2);
+    console.log("old", speedArray2);
     let speedArray3 = [];
-    for(let i = 0; i < 10; i++) {
+    for(let i = 0; i < 1; i++) {
         speedArray3.push(await newWorker("new_stuff", anArray));
     }
-    console.log(speedArray3);
+    console.log("new arr", speedArray3);
 })();
