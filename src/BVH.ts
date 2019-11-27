@@ -108,10 +108,10 @@ export class BVH {
 	}
 
 	static intersectRayTriangle(a:BVHVector3, b:BVHVector3, c:BVHVector3, rayOrigin:BVHVector3, rayDirection:BVHVector3, backfaceCulling:boolean):BVHVector3 | null {
-		var diff:BVHVector3 = new BVHVector3();
-		var edge1:BVHVector3 = new BVHVector3();
-		var edge2:BVHVector3 = new BVHVector3();
-		var normal:BVHVector3 = new BVHVector3();
+		let diff:BVHVector3 = new BVHVector3();
+		let edge1:BVHVector3 = new BVHVector3();
+		let edge2:BVHVector3 = new BVHVector3();
+		let normal:BVHVector3 = new BVHVector3();
 
 		// from http://www.geometrictools.com/LibMathematics/Intersection/Wm5IntrRay3Triangle3.cpp
 		edge1.subVectors(b, a);
@@ -130,12 +130,12 @@ export class BVH {
 		DdN *= sign;
 
 		diff.subVectors(rayOrigin, a);
-		var DdQxE2 = sign * rayDirection.dot(edge2.crossVectors(diff, edge2));
+		const DdQxE2 = sign * rayDirection.dot(edge2.crossVectors(diff, edge2));
 
 		// b1 < 0, no intersection
 		if(DdQxE2 < 0) return null;
 
-		var DdE1xQ = sign * rayDirection.dot(edge1.cross(diff));
+		const DdE1xQ = sign * rayDirection.dot(edge1.cross(diff));
 
 		// b2 < 0, no intersection
 		if(DdE1xQ < 0) return null;

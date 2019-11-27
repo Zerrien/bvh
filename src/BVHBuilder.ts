@@ -32,8 +32,8 @@ export function BVHBuilder(triangles:unknown | Vector[][] | number[] | Float32Ar
 	bboxHelper.set(bboxArray);
 
 	// create the root node, add all the triangles to it
-	var triangleCount:number = trianglesArray.length / 9;
-	var extents:XYZ[] = calcExtents(bboxArray, 0, triangleCount, EPSILON);
+	const triangleCount:number = trianglesArray.length / 9;
+	const extents:XYZ[] = calcExtents(bboxArray, 0, triangleCount, EPSILON);
 	let rootNode:BVHNode = new BVHNode(extents[0], extents[1], 0, triangleCount, 0);
 	let nodesToSplit:BVHNode[] = [rootNode];
 	let node:BVHNode | undefined;
@@ -71,8 +71,8 @@ export async function BVHBuilderAsync(triangles:unknown | Vector[][] | number[] 
 	bboxHelper.set(bboxArray);
 
 	// create the root node, add all the triangles to it
-	var triangleCount:number = trianglesArray.length / 9;
-	var extents:XYZ[] = calcExtents(bboxArray, 0, triangleCount, EPSILON);
+	const triangleCount:number = trianglesArray.length / 9;
+	const extents:XYZ[] = calcExtents(bboxArray, 0, triangleCount, EPSILON);
 	let rootNode:BVHNode = new BVHNode(extents[0], extents[1], 0, triangleCount, 0);
 	let nodesToSplit:BVHNode[] = [rootNode];
 	let node:BVHNode | undefined;
@@ -122,7 +122,7 @@ function splitNode(node: BVHNode, maxTriangles:number, bboxArray:Float32Array, b
 	}
 
 	// check if we couldn't split the node by any of the axes (x, y or z). halt here, dont try to split any more (cause it will always fail, and we'll enter an infinite loop
-	var splitFailed:boolean[] = [];
+	let splitFailed:boolean[] = [];
 	splitFailed.length = 3;
 
 	splitFailed[0] = (leftNode[0].length === 0) || (rightNode[0].length === 0);
@@ -132,9 +132,9 @@ function splitNode(node: BVHNode, maxTriangles:number, bboxArray:Float32Array, b
 	if (splitFailed[0] && splitFailed[1] && splitFailed[2]) return [];
 
 	// choose the longest split axis. if we can't split by it, choose next best one.
-	var splitOrder = [0, 1, 2];
+	let splitOrder = [0, 1, 2];
 
-	var extentsLength = [
+	const extentsLength = [
 		node.extentsMax[0] - node.extentsMin[0],
 		node.extentsMax[1] - node.extentsMin[1],
 		node.extentsMax[2] - node.extentsMin[2],
@@ -146,7 +146,7 @@ function splitNode(node: BVHNode, maxTriangles:number, bboxArray:Float32Array, b
 	let rightElements:number[] | undefined = [];
 
 	for (let j = 0; j < 3; j++) {
-		var candidateIndex = splitOrder[j];
+		const candidateIndex = splitOrder[j];
 		if (!splitFailed[candidateIndex]) {
 			leftElements = leftNode[candidateIndex];
 			rightElements = rightNode[candidateIndex];
@@ -156,23 +156,20 @@ function splitNode(node: BVHNode, maxTriangles:number, bboxArray:Float32Array, b
 
 
 	// sort the elements in range (startIndex, endIndex) according to which node they should be at
-	var node0Start = startIndex;
-	var node0End = node0Start + leftElements.length;
-	var node1Start = node0End;
-	var node1End = endIndex;
+	const node0End = startIndex + leftElements.length;
 	
 	copyBoxes(leftElements, rightElements, node.startIndex, bboxArray, bboxHelper);
 
 	// copy results back to main array
-	var subArr = bboxHelper.subarray(node.startIndex * 7, node.endIndex * 7);
+	const subArr = bboxHelper.subarray(node.startIndex * 7, node.endIndex * 7);
 	bboxArray.set(subArr, node.startIndex * 7);
 
 	// create 2 new nodes for the node we just split, and add links to them from the parent node
-	var node0Extents = calcExtents(bboxArray, node0Start, node0End, EPSILON);
-	var node1Extents = calcExtents(bboxArray, node1Start, node1End, EPSILON);
+	const node0Extents = calcExtents(bboxArray, startIndex, node0End, EPSILON);
+	const node1Extents = calcExtents(bboxArray, node0End, endIndex, EPSILON);
 
-	var node0 = new BVHNode(node0Extents[0], node0Extents[1], node0Start, node0End, node.level + 1);
-	var node1 = new BVHNode(node1Extents[0], node1Extents[1], node1Start, node1End, node.level + 1);
+	const node0 = new BVHNode(node0Extents[0], node0Extents[1], startIndex, node0End, node.level + 1);
+	const node1 = new BVHNode(node1Extents[0], node1Extents[1], node0End, endIndex, node.level + 1);
 
 	node.node0 = node0;
 	node.node1 = node1;
@@ -183,8 +180,8 @@ function splitNode(node: BVHNode, maxTriangles:number, bboxArray:Float32Array, b
 }
 
 function copyBoxes(leftElements:number[], rightElements:number[], startIndex:number, bboxArray:Float32Array, bboxHelper:Float32Array) {
-	var concatenatedElements = leftElements.concat(rightElements);
-	var helperPos = startIndex;
+	const concatenatedElements = leftElements.concat(rightElements);
+	let helperPos = startIndex;
 	for (let i = 0; i < concatenatedElements.length; i++) {
 		let currElement = concatenatedElements[i];
 		copyBox(bboxArray, currElement, bboxHelper, helperPos);
