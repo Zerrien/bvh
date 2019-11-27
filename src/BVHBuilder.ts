@@ -1,23 +1,4 @@
-declare global {
-	interface XYZ {
-		0: number,
-		1: number,
-		2: number
-	}
-	
-	interface Vector {
-		x: number;
-		y: number;
-		z: number;
-	}
-
-	type Evaluator = () => number;
-	type Work = () => void;
-	type WorkProgress = {nodesSplit: number};
-	type WorkProgressCallback = (progressObj:WorkProgress) => void;
-	type BVHProgress = {nodesSplit: number, trianglesLeafed: number};
-	type AsyncifyParams = {ms?: number, steps?: number};
-}
+import { Vector, XYZ, WorkProgress, BVHProgress, AsyncifyParams } from "./";
 
 const EPSILON = 1e-6;
 

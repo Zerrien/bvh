@@ -1,3 +1,4 @@
+import { Evaluator, Work, AsyncifyParams, WorkProgressCallback } from './';
 import { BVHNode } from './BVHNode';
 
 export function countNodes(node:BVHNode, count:number = 0):number {

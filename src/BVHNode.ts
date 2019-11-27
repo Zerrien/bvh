@@ -1,3 +1,5 @@
+import { XYZ } from "./";
+
 export class BVHNode {
 	extentsMin: XYZ;
 	extentsMax: XYZ;
