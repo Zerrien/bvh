@@ -1,6 +1,8 @@
 import "@babel/polyfill"; // IE11
 import 'whatwg-fetch'; // IE11
 
+
+
 const emojiRange = [128513, 128591];
 
 const spinnerElement = <HTMLElement>document.querySelector("#spinner");
@@ -14,11 +16,14 @@ const progressElement = <HTMLElement>document.querySelector("#prog-inter");
 const progressText = <HTMLElement>document.querySelector("#prog-text");
 const progressDesc = <HTMLElement>document.querySelector("#prog-status");
 const container = <HTMLElement>document.querySelector("#three-container");
+const logContainer = <HTMLElement>document.querySelector("#log-container");
 
+const myWorker = new Worker('./worker.js');
 [
 	{
 		name: "webworker",
 		func: function() {
+			lastBVH = "";
 			return new Promise(async (res, rej) => {
 				if(renderer) {
 					container.removeChild(renderer.domElement);
@@ -30,11 +35,11 @@ const container = <HTMLElement>document.querySelector("#three-container");
 				setProgress("Downloading model...", 0, 0.5, 1, 1);
 				initThree();
 				const sTime = Date.now();
-				const myWorker = new Worker('./worker.js');
 				myWorker.onmessage = (e:MessageEvent) => {
 					if(e.data.message === "progress") {
 						setProgress("Generating BVH...", 0.5, 1, e.data.data.value.trianglesLeafed, vertexPoints.length / 9);
 					} else if (e.data.message === "done") {
+						lastBVH = "worker";
 						setProgress("Done!", 0.5, 1, 1, 1);
 						spinnerElement.style.display = "none";
 						console.log(Date.now() - sTime);
@@ -48,6 +53,7 @@ const container = <HTMLElement>document.querySelector("#three-container");
 	{
 		name: "async10",
 		func: function() {
+			lastBVH = "";
 			return new Promise(async (res, rej) => {
 				if(renderer) {
 					container.removeChild(renderer.domElement);
@@ -62,6 +68,7 @@ const container = <HTMLElement>document.querySelector("#three-container");
 				bvh = await BVHBuilderAsync(vertexPoints, undefined, {steps: 10}, ({trianglesLeafed}) => {
 					setProgress("Generating BVH...", 0.5, 1, trianglesLeafed, vertexPoints.length / 9);
 				});
+				lastBVH = "main";
 				setProgress("Done!", 0.5, 1, 1, 1);
 				spinnerElement.style.display = "none";
 				console.log(Date.now() - sTime);
@@ -119,6 +126,7 @@ let scene: THREE.Scene;
 let renderer: THREE.WebGLRenderer;
 let mesh: THREE.Mesh;
 let bvh:BVH;
+let lastBVH:string;
 
 function concatTypedArray(resultConstructor: Uint8ArrayConstructor, ...arrays:Uint8Array[]) {
 	const totalLength = arrays
@@ -144,34 +152,91 @@ function setProgress(text: string, start:number, end:number, cur:number, max:num
 	progressDesc.innerText = "Click a button to begin...";
 })();
 
-function clearSpinner() {
-	
-}
-
 function initThree() {
-	camera = new THREE.PerspectiveCamera(0.75, window.innerWidth / window.innerHeight, 1, 100);
-	camera.position.set(0, 10, 10);
-	camera.lookAt(0, 0.1, 0);
+	camera = new THREE.PerspectiveCamera(2.5, window.innerWidth / window.innerHeight, 1, 100);
+	camera.position.set(0, 1, 1);
+	camera.lookAt(-0.05, 0.15, 0);
 	scene = new THREE.Scene();
-	var light1 = new THREE.DirectionalLight( 0xFFFFFF, 0.5 );
-	scene.add( light1 );
-	scene.add( new THREE.AmbientLight( 0x444444 ) );
+	var light1 = new THREE.DirectionalLight(0xFFFFFF, 0.5);
+	scene.add(light1);
+	scene.add(new THREE.AmbientLight(0x444444));
 	var geometry = new THREE.BufferGeometry();
 	geometry.addAttribute('position', new THREE.BufferAttribute(vertexPoints, 3));
+	let color = new Float32Array(vertexPoints.length);
+	for(let i = 0; i < color.length; i += 3) {
+		color[i] = 0/256;
+		color[i + 1] = 256/256;
+		color[i + 2] = 85/256;
+	}
+	const m = new THREE.BufferAttribute(color, 3);
+	geometry.addAttribute('color', m);
 	geometry.computeVertexNormals();
-	var material = new THREE.MeshStandardMaterial( { color: 0x00ff55 } );
-	mesh = new THREE.Mesh( geometry, material );
+	var material = new THREE.MeshStandardMaterial({vertexColors: THREE.VertexColors});
+	mesh = new THREE.Mesh(geometry, material);
 	scene.add(mesh);
-	renderer = new THREE.WebGLRenderer( { antialias: true } );
+	renderer = new THREE.WebGLRenderer({antialias: true});
 	renderer.setPixelRatio( window.devicePixelRatio );
 	renderer.setSize( window.innerWidth, window.innerHeight );
+	const raycaster = new THREE.Raycaster();
 	if(container) {
 		container.appendChild(renderer.domElement);
+		renderer.domElement.addEventListener("click", (e) => {
+			raycaster.setFromCamera(new THREE.Vector2(
+				(e.clientX / window.innerWidth) * 2 - 1,
+				-(e.clientY / window.innerHeight) * 2 + 1)
+			, camera);
+			if(lastBVH === "main") {
+				const sTime = Date.now();
+				const intersections = bvh.intersectRay(raycaster.ray.origin, raycaster.ray.direction);
+				const dTime = Date.now() - sTime;
+				if(logContainer) {
+					const div = document.createElement("div");
+					div.innerText = `Raycast took ${dTime}ms`;
+					div.className = "log-item";
+					logContainer.prepend(div);
+					if(logContainer.children.length >= 5) {
+						logContainer.removeChild(logContainer.children[logContainer.children.length - 1]);
+					}
+				}
+				if(intersections.length >= 1) {
+					for(let i = 0; i < 9; i++) {
+						(m.array[intersections[0].triangleIndex * 9 + i] as any) = 1;
+					}
+					(geometry.attributes.color as any).needsUpdate = true;
+				}
+			} else if (lastBVH === "worker") {
+				/*
+				myWorker.onmessage = (e:MessageEvent) => {
+					if(e.data.message === "ray_traced") {
+						console.log(":)");
+					}
+				}
+				*/
+				myWorker.postMessage({message: "ray_cast", data:{origin:raycaster.ray.origin, direction:raycaster.ray.direction}});
+			}
+		});
 		animate();
 	}
 }
 
+const Stats = require('stats.js');
+var stats = new Stats();
+stats.showPanel(2);
+stats.dom.style.cssText = "";
+stats.dom.style.position = 'absolute';
+stats.dom.style.bottom = '0';
+stats.dom.style.right = '0';
+document.body.appendChild(stats.dom);
+
+
+function renderMemoryUsage() {
+	stats.begin();
+	stats.end();
+	requestAnimationFrame(renderMemoryUsage);
+}
+requestAnimationFrame(renderMemoryUsage);
+
 function animate() {
-	requestAnimationFrame( animate );
-	renderer.render( scene, camera );
+	requestAnimationFrame(animate);
+	renderer.render(scene, camera);
 }

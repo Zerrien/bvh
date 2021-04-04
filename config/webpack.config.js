@@ -32,5 +32,6 @@ module.exports = {
 	devServer: {
 		contentBase: "./docs",
 		stats: 'errors-only',
+		disableHostCheck: true,
 	},
 };

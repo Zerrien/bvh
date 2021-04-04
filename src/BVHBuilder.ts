@@ -2,7 +2,6 @@ import { Vector, XYZ, WorkProgress, BVHProgress, AsyncifyParams } from "./";
 
 const EPSILON = 1e-6;
 
-import { BVHVector3 } from "./BVHVector3";
 import { BVHNode } from "./BVHNode";
 import { BVH } from "./BVH";
 import { asyncWork } from './utils'

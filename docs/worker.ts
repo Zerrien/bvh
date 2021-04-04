@@ -20,7 +20,7 @@ async function buildBVH(array:any ) {
 		});
 	});
 	(self as any).postMessage({
-		message: "done"
+		message: "done",
 	});
 }
 
