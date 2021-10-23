@@ -2,8 +2,8 @@
 	<a href='https://github.com/zerrien/bvh/actions'>
 		<img src="https://github.com/zerrien/bvh/workflows/Node%20CI/badge.svg" alt='Build Status'/>
 	</a>
-	<a href='https://coveralls.io/github/Zerrien/bvh?branch=master'>
-		<img src='https://coveralls.io/repos/github/Zerrien/bvh/badge.svg?branch=master' alt='Coverage Status' />
+	<a href='https://coveralls.io/github/Zerrien/bvh?branch=main'>
+		<img src='https://coveralls.io/repos/github/Zerrien/bvh/badge.svg?branch=main' alt='Coverage Status' />
 	</a>
 </p>
 

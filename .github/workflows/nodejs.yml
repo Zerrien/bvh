@@ -13,19 +13,32 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
+
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
+
     - name: npm install, build, and test
       run: |
         npm install
         npm run build --if-present
         npm run test:ci
         npm run lint
-    - name: Coveralls GitHub Action
+
+    - name: coveralls
       uses: coverallsapp/github-action@v1.0.1
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
       env:
         CI: true
+
+    - name: build docs
+      run: |
+        npm run build:docs
+
+    - name: deploy docs
+      uses: JamesIves/github-pages-deploy-action@4.1.5
+      with:
+        branch: gh-pages # The branch the action should deploy to.
+        folder: docs # The folder the action should deploy.
