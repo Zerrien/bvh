@@ -36,8 +36,9 @@ jobs:
   deploy-docs:
     strategy:
       node-version: 12.x
-
     needs: build
+
+    steps:
     - name: build docs
       run: |
         npm install
