@@ -1,0 +1,120 @@
+html {
+	background-color: black;
+	font-family: monospace;
+	color: white;
+}
+
+body {
+	padding: 0;
+	margin: 0;
+}
+
+#description {
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 256px;
+	text-align: center;
+}
+#log-container {
+	position: absolute;
+	top: 0;
+	width: 100%;
+	pointer-events: none;
+	text-align: center;
+	font-size: xx-large;
+	color: #4444FF;
+	filter: drop-shadow(0px 0px 1px black) drop-shadow(0px 0px 2px black) drop-shadow(0px 0px 4px black);
+}
+.log-item:nth-of-type(2) {
+	opacity: 75%;
+}
+.log-item:nth-of-type(3) {
+	opacity: 50%;
+}
+.log-item:nth-of-type(4) {
+	opacity: 25%;
+}
+#button-container {
+	position: absolute;
+	top: 0;
+	left: 0;
+	margin: 8px;
+}
+
+.button {
+	text-align: center;
+	border: 1px solid white;
+	border-radius: 8px;
+	padding: 8px;
+	margin: 4px;
+	cursor: pointer;
+}
+
+.button:hover {
+	background-color: rgba(255, 255, 255, 0.5);
+}
+
+.button:active {
+	background-color: rgba(255, 255, 255, 0.1);
+}
+
+.button.disabled {
+	background-color: white;
+	cursor: default;
+}
+
+#spinner {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	font-size: 5em;
+	transform: translateX(-50%) translateY(-50%);
+}
+
+#prog-bar {
+	position: absolute;
+	bottom: 32px;
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+#prog-bar-itself {
+	width: 256px;
+	height: 16px;
+	border-radius: 16px;
+	margin: 4px;
+	border: 2px solid white;
+	overflow: hidden;
+	padding: 4px;
+	position: relative;
+}
+
+#prog-text {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translateX(-50%) translateY(-50%);
+	mix-blend-mode: difference;
+}
+
+#prog-inter {
+	background-color: white;
+	width: 0%;
+	min-width: 16px;
+	max-width: 100%;
+	height: 100%;
+	border-radius: 16px;
+}
+
+#prog-status {
+	text-align: center;
+}
+
+#three-container {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
+}
