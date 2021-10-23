@@ -1,6 +1,16 @@
-import "@babel/polyfill"; // IE11
+import "core-js/stable"; // IE11
 import 'whatwg-fetch'; // IE11
 
+
+import * as THREE from 'three';
+import { BVHBuilderAsync, BVHBuilder, BVH } from '../src/';
+
+let camera : THREE.PerspectiveCamera;
+let scene: THREE.Scene;
+let renderer: THREE.WebGLRenderer;
+let mesh: THREE.Mesh;
+let bvh:BVH;
+let lastBVH:string;
 
 
 const emojiRange = [128513, 128591];
@@ -24,7 +34,7 @@ const myWorker = new Worker('./worker.js');
 		name: "webworker",
 		func: function() {
 			lastBVH = "";
-			return new Promise(async (res, rej) => {
+			return new Promise<void>(async (res, rej) => {
 				if(renderer) {
 					container.removeChild(renderer.domElement);
 					spinnerElement.style.display = "block";
@@ -37,7 +47,7 @@ const myWorker = new Worker('./worker.js');
 				const sTime = Date.now();
 				myWorker.onmessage = (e:MessageEvent) => {
 					if(e.data.message === "progress") {
-						setProgress("Generating BVH...", 0.5, 1, e.data.data.value.trianglesLeafed, vertexPoints.length / 9);
+						setProgress("Generating BVH...", 0.5, 1, (e.data.data.value.trianglesLeafed as number), vertexPoints.length / 9);
 					} else if (e.data.message === "done") {
 						lastBVH = "worker";
 						setProgress("Done!", 0.5, 1, 1, 1);
@@ -54,7 +64,7 @@ const myWorker = new Worker('./worker.js');
 		name: "async10",
 		func: function() {
 			lastBVH = "";
-			return new Promise(async (res, rej) => {
+			return new Promise<void>(async (res, rej) => {
 				if(renderer) {
 					container.removeChild(renderer.domElement);
 					spinnerElement.style.display = "block";
@@ -104,7 +114,7 @@ async function downloadModel() {
 		return new Promise((res, rej) => {
 			let running:Uint8Array[] = [];
 			let runningResult = 0;
-			bodyReader.read().then(function read(result:{value:Uint8Array, done:boolean}) {
+			bodyReader.read().then(function read(result) {
 				if(result.done) return res(concatTypedArray(Uint8Array, ...running).buffer);
 				runningResult += result.value.length;
 				running.push(result.value);
@@ -117,16 +127,6 @@ async function downloadModel() {
 	});
 	return new Float32Array(await arrayBuffer);
 }
-
-import * as THREE from 'three';
-import { BVHBuilderAsync, BVHBuilder, BVH } from 'BVH';
-
-let camera : THREE.PerspectiveCamera;
-let scene: THREE.Scene;
-let renderer: THREE.WebGLRenderer;
-let mesh: THREE.Mesh;
-let bvh:BVH;
-let lastBVH:string;
 
 function concatTypedArray(resultConstructor: Uint8ArrayConstructor, ...arrays:Uint8Array[]) {
 	const totalLength = arrays

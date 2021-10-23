@@ -30,8 +30,8 @@ module.exports = {
 		],
 	},
 	devServer: {
-		contentBase: "./docs",
-		stats: 'errors-only',
-		disableHostCheck: true,
+		static: {
+		  directory: path.join(__dirname, '..', 'docs'),
+		},
 	},
 };

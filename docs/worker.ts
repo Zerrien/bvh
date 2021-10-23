@@ -1,4 +1,4 @@
-import { BVHBuilder, BVHBuilderAsync, BVH, BVHVector3 } from '@src';
+import { BVHBuilder, BVHBuilderAsync, BVH, BVHVector3 } from '../src';
 
 let bvh:BVH;
 
