@@ -61,7 +61,7 @@
     "puppeteer": "1.19.0",
     "regenerator-runtime": "0.12.1",
     "stats.js": "0.17.0",
-    "three": "0.133.1",
+    "three": "0.137.0",
     "ts-jest": "27.0.7",
     "ts-loader": "9.2.6",
     "ts-node": "10.4.0",
